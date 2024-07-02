@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ZAP Scan Dashboard</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <link rel="icon" href="avk.png">
+  
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.42em;
+      color:#A7A1AE;
+      background-color:#1F2739;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      font-size:3em; 
+      font-weight: 300;
+      line-height:1em;
+      text-align: center;
+      color: #4DC3FA;
+      margin-top: 20px;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .card {
+      width: 300px;
+      margin: 20px;
+      padding: 15px;
+      background-color: #2C384A;
+      color: #FFFFFF;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .card h2 {
+      font-size: 1em;
+      margin-bottom: 10px;
+    }
+    .progress-bar-container {
+      width: 100%;
+      background-color: #f3f3f3;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .progress-bar {
+      height: 20px;
+      width: 0;
+      background-color: #4caf50;
+      text-align: center;
+      line-height: 20px;
+      color: white;
+    }
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #4caf50;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 10px auto;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .hidden {
+      display: none;
+    }
+    #scanForm {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    #scanForm input {
+      width: 300px;
+      padding: 10px;
+      margin-right: 10px;
+    }
+    #scanForm button {
+      padding: 10px;
+    }
+    .error-message {
+      color: red;
+      margin-top: 10px;
+    }
+
+
+    .nav-icon {
+            font-size: 30px;
+            cursor: pointer;
+            position: absolute; /* Position absolutely within the parent */
+            top: 10px; /* Adjust top position as needed */
+            left: 10px; /* Adjust left position as needed */
+            z-index: 1000; /* Ensure it's above other content */
+        }
+
+
+        body {
+    font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 500;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {
+        padding-top: 15px;
+    }
+    .sidenav a {
+        font-size: 18px;
+    }
+}
+
+.container {
+    padding-left: 20px; /* Adjust as needed */
+}
+
+#openSidebarButton {
+    position: absolute;
+    top: 20px; /* Adjust as needed */
+    left: 20px; /* Adjust as needed */
+    font-size: 30px;
+    cursor: pointer;
+}
+
+
+
+.container {
+            max-width: 100%;
+height:100%;
+            padding: 20px;
+        }
+
+        /* Styles for the heading */
+        .dashboard-heading {
+          width:100%;
+          justify-content: center;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .dashboard-heading h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin: 0;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .dashboard-heading h1:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+            animation: pulsate 1s ease-in-out infinite;
+        }
+
+        /* Animation keyframes for subtle pulsating effect */
+        @keyframes pulsate {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .typewriter {
+    display: flex;
+    margin-top:10%;
+    width: 50%;
+    position: absolute;
+         
+    flex-direction: column;
+    align-items: center;
+     /* Adjust as needed */
+}
+
+.typewriter .line {
+    overflow: hidden; /* Ensures the content is not revealed until the animation starts */
+    white-space: nowrap; /* Keeps the text on a single line */
+    margin: 10px 0; /* Space between lines */
+    letter-spacing: .15em; /* Adjust as needed */
+    border-right: .15em solid transparent; /* Initially invisible cursor */
+}
+
+.typewriter .line:nth-child(1) {
+    animation: typing 4s steps(40, end) 0s 1 normal both, blink-caret .75s step-end infinite 4s;
+}
+
+.typewriter .line:nth-child(2) {
+    animation: typing 4s steps(40, end) 4s 1 normal both, blink-caret .75s step-end infinite 8s;
+}
+
+.typewriter .line:nth-child(3) {
+    animation: typing 4s steps(40, end) 8s 1 normal both, blink-caret .75s step-end infinite 12s;
+}
+
+.typewriter .line:nth-child(4) {
+    animation: typing 4s steps(40, end) 12s 1 normal both, blink-caret .75s step-end infinite 16s;
+}
+
+/* The typing effect */
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+/* The cursor blink effect */
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: orange; }
+}
+
+
+
+
+
+    /* style for card */
+  
+/* style for cards end */
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="dashboard-heading">
+        <h1>ZAP Scan Dashboard</h1>
+    </div>
+
+  <form id="scanForm">
+    <!-- <input type="text" id="targetUrl" placeholder="Enter target URL" required>
+    <button type="submit">Start Scan</button> -->
+  </form>
+  <div class="typewriter">
+    <div class="line">Welcome to my dashboard, this is a ZAP Scan Dashboard.</div>
+    <div class="line">It provides comprehensive security scan results.</div>
+    <div class="line">Review your scan history and detailed reports.</div>
+    <div class="line">Stay secure and updated with our real-time analysis.</div>
+</div>
+  <div class="container" id="statusContainer">
+    
+  </div>
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="history.html">History</a>
+
+  </div>
+  <script>
+    const socket = io();
+    let componentId = 1;
+    // Add event listener to the form
+//     document.getElementById('scanForm').addEventListener('submit', async (event) => {
+//         event.preventDefault();
+//         const targetUrl = document.getElementById('targetUrl').value;
+//         addStatusComponent(targetUrl + componentId);
+
+//         try {
+//             const response = await fetch(`/data/${encodeURIComponent(targetUrl)}`);
+// alert()
+//             if (!response.ok) {
+//                 const errorData = await response.json();
+//                 console.log('Error message:', errorData.message);
+//                 updateStatusComponent(targetUrl + componentId, 'dateLimit', errorData.message);
+//                 return;
+//             }
+
+//             const data = await response.json();
+//             console.log('Fetched data:', data); // Handle fetched data as needed
+//         } catch (error) {
+//             console.error('Error fetching data:', error);
+//         }
+
+//        //socket.emit('startScan', targetUrl);
+//     });
+
+
+
+socket.on('hideTypewriter', () => {
+      // Hide the typewriter div
+      document.querySelector('.typewriter').style.display = 'none';
+    });
+
+
+
+
+    socket.on('checkTime', async (targetUrl) => {
+      addStatusComponent(targetUrl + componentId);
+    try {
+     
+        const response = await fetch(`/data/${encodeURIComponent(targetUrl)}`);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.log('Error message:', errorData.message);
+            updateStatusComponent(targetUrl + componentId, 'dateLimit', errorData.message);
+            return;
+        }
+
+        const data = await response.json();
+        console.log('Fetched data:', data); // Handle fetched data as needed
+        // You can update the UI or take other actions based on 'data' here
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+
+    // You can emit another socket event or perform other actions here
+    socket.emit('startScan', targetUrl);
+});
+
+
+
+    // Listen for events
+    socket.on('startScan', (targetUrl) => {
+
+        addStatusComponent(targetUrl + componentId);
+        
+    });
+
+    socket.on('spiderStatus', (data) => {
+        const { url, status } = data;
+        updateStatusComponent(url + componentId, 'spider', status);
+    });
+
+    socket.on('scanStatus', (data) => {
+        const { url, status } = data;
+        updateStatusComponent(url + componentId, 'scan', status);
+    });
+
+    socket.on('scanComplete', (data) => {
+        const { url } = data;
+        showSpinner(url + componentId);
+    });
+
+    socket.on('generatedjson', (data) => {
+        const { url } = data;
+        hideSpinner(url + componentId);
+        const reportStatus = document.getElementById(`reportStatus-${encodeURIComponent(url + componentId)}`);
+        reportStatus.innerHTML = "Report Generated";
+        componentId = componentId+1;
+    });
+
+    socket.on('error', (data) => {
+        const { url, message } = data;
+        updateStatusComponent(url + componentId, 'error', message);
+        hideSpinner(url + componentId);
+    });
+
+    function addStatusComponent(url) {
+    const typew =document.getElementsByClassName("typewriter");
+    typew.innerHTML = " ";
+        const statusContainer = document.getElementById('statusContainer');
+        const encodedUrl = encodeURIComponent(url);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.id = `status-${encodedUrl}`;
+        card.innerHTML = `
+            <h2>${url.slice(0, -1)}</h2>
+            <div>
+                <h3>Spider Status</h3>
+                <div class="progress-bar-container">
+                    <div id="spiderProgressBar-${encodedUrl}" class="progress-bar">0%</div>
+                </div>
+            </div>
+            <div>
+                <h3>Scan Status</h3>
+                <div class="progress-bar-container">
+                    <div id="scanProgressBar-${encodedUrl}" class="progress-bar">0%</div>
+                </div>
+            </div>
+            <div id="spinner-${encodedUrl}" class="spinner hidden"></div>
+            <div id="reportStatus-${encodedUrl}"></div>
+            <div id="error-${encodedUrl}" class="error-message"></div>
+        `;
+        statusContainer.appendChild(card);
+    }
+
+    function updateStatusComponent(url, type, status) {
+        const encodedUrl = encodeURIComponent(url);
+        if (type == 'dateLimit') {
+            componentId =componentId+ 1;
+
+            const card = document.getElementById(`status-${encodedUrl}`);
+            card.innerHTML = '';
+
+            const site = document.createElement('div');
+            site.innerHTML = url.slice(0, -1);
+
+            card.appendChild(site);
+
+            const description = document.createElement('div');
+            description.innerHTML = "<p>This website has already been scanned</p>";
+            card.appendChild(description);
+        }
+
+        if (type === 'error') {
+            document.getElementById(`error-${encodedUrl}`).innerText = `Error: ${status}`;
+        } else {
+            const progressBar = document.getElementById(`${type}ProgressBar-${encodedUrl}`);
+            if (progressBar) {
+                progressBar.style.width = `${status}%`;
+                progressBar.innerText = `${status}%`;
+            }
+        }
+    }
+
+    function showSpinner(url) {
+        const encodedUrl = encodeURIComponent(url);
+        const spinner = document.getElementById(`spinner-${encodedUrl}`);
+        spinner.style.display = 'block';
+    }
+
+    function hideSpinner(url) {
+        const encodedUrl = encodeURIComponent(url);
+        const spinner = document.getElementById(`spinner-${encodedUrl}`);
+        spinner.style.display = 'none';
+    }
+</script>
+
+<span  class="nav-icon" style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; </span>
+
+<script>
+function openNav() {
+  document.getElementById("mySidenav").style.width = "200px";
+}
+
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";
+}
+
+</script>
+
+
+</body>
+</html>

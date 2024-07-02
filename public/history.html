@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History Data</title>
+    <link rel="stylesheet" href="./history.css"/>
+    <style>
+    
+    </style>
+</head>
+<body>
+    <h1>History Data</h1>
+    <table class="container">
+        <thead>
+            <tr>
+                <th>URL</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody id="historyTable">
+            <!-- Data will be populated here -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchData() {
+            try {
+                const response = await fetch('/data');
+                const data = await response.json();
+                const tableBody = document.querySelector('#historyTable');
+
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    const urlCell = document.createElement('td');
+                    const dateCell = document.createElement('td');
+
+                    urlCell.textContent = item.url;
+
+                    const date = new Date(item.date); // Assuming `date` field exists
+                    const formattedDate = date.toLocaleString(); // Convert to a readable format
+
+                    dateCell.textContent = formattedDate;
+
+                    row.appendChild(urlCell);
+                    row.appendChild(dateCell);
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        window.onload = fetchData;
+    </script>
+</body>
+</html>
