@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/navbar.css" />
+    <title>Profile Dropdown</title>
+  </head>
+  <body>
+    <nav class="navbar">
+      <ul class="navbar-list">
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">History</a></li>
+        
+      </ul>
+
+      <div class="profile-dropdown">
+        <div onclick="toggle()" class="profile-dropdown-btn">
+          
+
+          <span id="user"
+            >Victoria
+            <i class="fa-solid fa-angle-down"></i>
+          </span>
+          <div >
+            <i class="fa-solid fa-angle-down down-arrow"></i>
+          </div>
+        </div>
+
+        <ul class="profile-dropdown-list">
+
+          <li class="profile-dropdown-list-item">
+            <a onclick="logout()">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              Log out
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+<script>
+
+const username = localStorage.getItem("username");
+document.getElementById("user").innerHTML=username;
+
+
+ function logout() {
+        localStorage.removeItem("username");
+         localStorage.removeItem("token");
+        window.location.href = "/"; // Redirect to your login page
+      }
+
+</script>
+    <script src="navbar.js"></script>
+  </body>
+</html>
