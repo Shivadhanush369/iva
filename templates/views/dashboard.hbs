@@ -204,19 +204,8 @@ body {
       flex-wrap: wrap;
       justify-content: center;
     }
-    .card {
-      width: 300px;
-      margin: 20px;
-      padding: 15px;
-      background-color: #2C384A;
-      color: #FFFFFF;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .card h2 {
-      font-size: 1em;
-      margin-bottom: 10px;
-    }
+    
+  
     .progress-bar-container {
       width: 100%;
       background-color: #f3f3f3;
@@ -412,18 +401,96 @@ height:100%;
 
 
 
-    /* style for card */
+/* style for top dropdown */
   
-/* style for cards end */
+select#scope {
+            padding: 10px;
+            border: 2px solid #007BFF;
+            border-radius: 5px;
+            background-color: #ffffff;
+            color: #007BFF;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            appearance: none;
+            outline: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        select#scope:hover {
+            border-color: #0056b3;
+            color: #0056b3;
+        }
+        select#scope:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
+        }
+        /* Custom arrow */
+        select#scope::-ms-expand {
+            display: none;
+        }
+        select#scope::after {
+            content: '\25BC';
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 12px;
+            color: #007BFF;
+        }
+.right-align-container {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px;
+        }
+
+        /* Styling for the select element */
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #007BFF;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #007BFF;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+
+        select:hover {
+            border-color: #0056b3;
+            color: #0056b3;
+        }
+
+        select:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
+        }
+
+        
+/* style for bottom dropdown end */
   </style>
 </head>
 <body>
    {{>navbar}}
+<div class="right-align-container">
+    <select id="scope" onchange="toggleCustomInput()">
+                    <option value="" disabled selected>Select your scope</option>
+                    
+                </select>
+                </div>
+
   <div class="container">
-
    
+{{>bodycards}}
 
-  <form id="scanForm">
+  
+
+  {{!-- <form id="scanForm">
     <!-- <input type="text" id="targetUrl" placeholder="Enter target URL" required>
     <button type="submit">Start Scan</button> -->
   </form>
@@ -432,7 +499,7 @@ height:100%;
     <div class="line">It provides comprehensive security scan results.</div>
     <div class="line">Review your scan history and detailed reports.</div>
     <div class="line">Stay secure and updated with our real-time analysis.</div>
-</div>
+</div> --}}
   <div class="container" id="statusContainer">
     
   </div>
@@ -444,6 +511,9 @@ height:100%;
   <script>
     const socket = io();
     let componentId = 1;
+
+
+    
     // Add event listener to the form
 //     document.getElementById('scanForm').addEventListener('submit', async (event) => {
 //         event.preventDefault();
@@ -766,5 +836,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
+<script src="dashboard.js"></script>
 </body>
 </html>
