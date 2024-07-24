@@ -2,8 +2,8 @@ const axios = require('axios');
 const fs = require('fs');
 const mongoose = require('mongoose');
 const { URL } = require('url');
-const ZAP_HOST = 'http://localhost:8081'; // Change this to your ZAP host
-const API_KEY = 'sf1l9d7pvavoh4qfbkkvrh14h3';
+const ZAP_HOST = 'http://localhost:8080'; // Change this to your ZAP host
+const API_KEY = 'm54cpsd8nr7elj7q6mdtei1rfd';
 const History = require('../models/History');
 const Report = require('../models/Report');
 // Define the History model (adjust the schema according to your needs)

@@ -15,6 +15,7 @@ async function fetchAndDisplayAlerts(Url) {
                 }
 
                 const data = await response.json();
+
                 const cardLeft = document.querySelector('.card-left');
                 const cardRight = document.querySelector('.card-right');
 
@@ -79,3 +80,15 @@ async function fetchAndDisplayAlerts(Url) {
 
         // Call the function to fetch data and update the DOM when the page loads
         // window.onload = fetchAndDisplayAlerts;
+
+
+
+        
+        
+        
+      
+
+          
+                
+              
+                

@@ -5,6 +5,8 @@ const oneday = require('./models/oneday');
 const mongoConnectionString = 'mongodb://127.0.0.1/agenda1';
 const agenda = new Agenda({ db: { address: mongoConnectionString } });
 const connectDB = require('./db/db');
+const { TextEncoder, TextDecoder } = require('util');
+
 
 agenda.define('fetch data', { priority: 'high', concurrency: 5 }, async (job, done) => {
   try {

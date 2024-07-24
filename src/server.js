@@ -1,4 +1,5 @@
 const e = require("express");
+const fs = require('fs');
 require('./scheduler1');
 const express = require("express");
 const path = require("path");
@@ -15,6 +16,7 @@ const onemonth = require('./models/onemonth');
 const Report = require('./models/Report');
 const oneday = require('./models/oneday');
 const subscribe = require('./models/subscribe');
+const ReportSchema = require('./models/ReportSchema'); 
 const secretKey = "secretKey";
 const NodeCache = require('node-cache');
 // Middleware to parse JSON bodies
@@ -211,11 +213,11 @@ app.post('/profile', verifyToken, (req, res) => {
 });
 
 
-app.post('/getIssues', verifyToken,async (req, res) => {
-    const { name } = req.authData; 
-   
-    let url =req.body.url;
-    console.log(url)
+app.post('/getIssues', verifyToken, async (req, res) => {
+    const { name } = req.authData; // not used in this function
+
+    let url = req.body.url;
+
     const cachedAlerts = cache.get(url);
     if (cachedAlerts) {
         return res.json(cachedAlerts);
@@ -223,36 +225,79 @@ app.post('/getIssues', verifyToken,async (req, res) => {
 
     try {
         const reportData = await Report.find({ 'report.url.url': url });
-        if (!reportData) {
+
+        if (!reportData || reportData.length === 0) {
             return res.status(404).json({ error: 'No reports found for this URL' });
         }
 
-
         const alertsArray = [];
-        reportData.forEach(report => {
-            report.report.site.forEach(site => {
-                site.alerts.forEach(alert => {
-                    alertsArray.push({
-                        alertName: alert.alert,
-                        description: alert.desc,
-                        riskdesc : alert.riskdesc,
-                        solution: alert.solution,
-                        cweid: alert.cweid,
-                        wascid : alert.wascid,
-                        
-                    });
-                });
-            });
-        });
-        cache.set(url, alertsArray);
 
-       // const alerts = reportData[0].alerts.filter(alert => alert.name === name);
+        reportData.forEach(report => {
+            if (report.report && Array.isArray(report.report.site)) {
+                report.report.site.forEach(site => {
+                    if (Array.isArray(site.alerts)) {
+                        site.alerts.forEach(alert => {
+                            alertsArray.push({
+                                alertName: alert.alert || 'N/A',
+                                description: alert.desc || 'N/A',
+                                riskdesc: alert.riskdesc || 'N/A',
+                                solution: alert.solution || 'N/A',
+                                cweid: alert.cweid || 'N/A',
+                                wascid: alert.wascid || 'N/A',
+                            });
+                        });
+                    } else {
+                        console.warn('No alerts found for site:', site);
+                    }
+                });
+            } else {
+                console.warn('No sites found in report:', report);
+            }
+        });
+
+        cache.set(url, alertsArray);
         res.json(alertsArray);
     } catch (error) {
         console.error('Error fetching issues:', error);
-        res.status(500).json({ error: 'Failed to fetch issues' });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+
+
+app.post('/report',  verifyToken,async (req, res) => {
+    let url =req.body.url;
+    try {
+        const reports = await Report.find({ 'report.url.url': url });
+        res.json(reports);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch reports' });
+    }
+});
+
+
+app.post('/scanned', verifyToken, async (req, res) => {
+    const { name } = req.authData; // not used in this function
+    
+    let url = req.body.url;
+
+    try {
+        const reportData = await Report.find({ 'report.url.url': url });
+        if (!reportData || reportData.length === 0) {
+            return res.status(404).json({ error: 'No reports found for this URL' });
+        }
+
+        // Counting the number of URLs scanned
+        const urlCount = reportData.length;
+
+        return res.json({ urlCount, reportData });
+    } catch (error) {
+        console.error('Error fetching report data:', error);
+        return res.status(500).json({ error: 'An error occurred while fetching report data' });
+    }
+});
+
 
 setInterval(() => {
     console.log('Clearing cache');
