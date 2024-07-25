@@ -299,6 +299,31 @@ app.post('/scanned', verifyToken, async (req, res) => {
 });
 
 
+app.post('/alertCount', async (req, res) => {
+    const { url } = req.body;
+    try {
+        const reportData = await Report.find({ 'report.url.url': url });
+        if (!reportData || reportData.length === 0) {
+            return res.status(404).json({ error: 'No reports found for this URL' });
+        }
+        let alertCount = 0;
+        reportData.forEach(report => {
+            if (report.report && Array.isArray(report.report.site)) {
+                report.report.site.forEach(site => {
+                    if (Array.isArray(site.alerts)) {
+                        alertCount += site.alerts.length;
+                    }
+                });
+            }
+        });
+        res.json({ alertCount });
+    } catch (error) {
+        console.error('Error counting alerts:', error);
+        res.status(500).json({ error: 'Failed to count alerts' });
+    }
+});
+
+
 setInterval(() => {
     console.log('Clearing cache');
     cache.flushAll();

@@ -35,6 +35,7 @@ function toggleCustomInput() {
     fetchAndDisplayAlerts(scopeSelect.value);
     donutchart(scopeSelect.value);
     fetchAndUpdateChart(scopeSelect.value);
+    updateAlertCountForScope(scopeSelect.value);
 }
 
 function extractCweIds(data) {
@@ -132,127 +133,8 @@ function initializeCharts(data) {
     });
 }
 
-Highcharts.chart('container3', {
-    chart: {
-        type: 'gauge',
-        plotBackgroundColor: null,
-        plotBackgroundImage: null,
-        plotBorderWidth: 0,
-        plotShadow: false,
-        height: '80%'
-    },
-    title: {
-        text: 'Risk Levels Distribution'
-    },
-    credits: {
-        enabled: false
-    },
-    pane: {
-        startAngle: -90,
-        endAngle: 90,
-        background: null,
-        center: ['50%', '75%'],
-        size: '110%'
-    },
-    yAxis: {
-        min: 0,
-        max: 100,
-        tickPixelInterval: 72,
-        tickPosition: 'inside',
-        tickColor: Highcharts.defaultOptions.chart.backgroundColor || '#FFFFFF',
-        tickLength: 20,
-        tickWidth: 2,
-        minorTickInterval: null,
-        labels: {
-            distance: 20,
-            style: {
-                fontSize: '14px'
-            }
-        },
-        lineWidth: 0,
-        plotBands: [{
-            from: 0,
-            to: 40,
-            color: '#55BF3B', // green
-            thickness: 20,
-            borderRadius: '50%',
-            label: {
-                text: 'Low Risk',
-                style: {
-                    color: '#FFFFFF'
-                }
-            }
-        }, {
-            from: 40,
-            to: 70,
-            color: '#DDDF0D', // yellow
-            thickness: 20,
-            label: {
-                text: 'Medium Risk',
-                style: {
-                    color: '#000000'
-                }
-            }
-        }, {
-            from: 70,
-            to: 100,
-            color: '#DF5353', // red
-            thickness: 20,
-            label: {
-                text: 'High Risk',
-                style: {
-                    color: '#FFFFFF'
-                }
-            }
-        }]
-    },
-    series: [{
-        name: 'Risk Level',
-        data: [34], // Adjust this value based on your actual calculation
-        tooltip: {
-            valueSuffix: ' alerts'
-        },
-        dataLabels: {
-            format: '{y} alerts',
-            borderWidth: 0,
-            color: (
-                Highcharts.defaultOptions.title &&
-                Highcharts.defaultOptions.title.style &&
-                Highcharts.defaultOptions.title.style.color
-            ) || '#333333',
-            style: {
-                fontSize: '16px'
-            }
-        },
-        dial: {
-            radius: '80%',
-            backgroundColor: 'gray',
-            baseWidth: 12,
-            baseLength: '0%',
-            rearLength: '0%'
-        },
-        pivot: {
-            backgroundColor: 'gray',
-            radius: 6
-        }
-    }]
-});
 
-// Add some life
-setInterval(() => {
-    const chart = Highcharts.charts[1];
-    if (chart && !chart.renderer.forExport) {
-        const point = chart.series[0].points[0],
-            inc = Math.round((Math.random() - 0.5) * 20);
 
-        let newVal = point.y + inc;
-        if (newVal < 0 || newVal > 100) {
-            newVal = point.y - inc;
-        }
-        console.log('Updating gauge chart to new value:', newVal); 
-        point.update(newVal, true);
-    }
-}, 3000);
 
 // Gauge options configuration
 const gaugeOptions = {
@@ -314,49 +196,151 @@ const gaugeOptions = {
     }
 };
 
-// Create or update the speed gauge chart
 function updateGaugeChart(urlCount) {
     console.log('Updating Gauge Chart with URL Count:', urlCount);
-    
-    // Find the existing chart if it exists
-    const existingChart = Highcharts.charts.find(chart => chart && chart.renderTo.id === 'container2');
 
-    if (existingChart) {
-        // Update the existing chart's data
-        let point = existingChart.series[0].points[0];
-        if (point) {
-            point.update(urlCount);
-        }
-    } else {
-        // Create a new chart if none exists
-        Highcharts.chart('container2', Highcharts.merge(gaugeOptions, {
-            yAxis: {
-                min: 0,
-                max: 200,
-                title: {
-                    text: ''
-                }
+    // Create a new chart directly without checking for an existing one
+    Highcharts.chart('container2', Highcharts.merge(gaugeOptions, {
+        yAxis: {
+            min: 0,
+            max: 200,
+            title: {
+                text: ''
+            }
+        },
+        credits: {
+            enabled: false
+        },
+        series: [{
+            name: 'Speed',
+            data: [urlCount],
+            dataLabels: {
+                format:
+                '<div style="text-align:center">' +
+                '<span style="font-size:25px">{y}</span><br/>' +
+                '<span style="font-size:12px;opacity:0.4">scans</span>' +
+                '</div>'
             },
-            credits: {
-                enabled: false
-            },
-            series: [{
-                name: 'Speed',
-                data: [urlCount],
-                dataLabels: {
-                    format:
-                    '<div style="text-align:center">' +
-                    '<span style="font-size:25px">{y}</span><br/>' +
-                    '<span style="font-size:12px;opacity:0.4">scans</span>' +
-                    '</div>'
-                },
-                tooltip: {
-                    valueSuffix: ' scans'
-                }
-            }]
-        }));
-    }
+            tooltip: {
+                valueSuffix: ' scans'
+            }
+        }]
+    }));
 }
+
+
+
+
+function renderAlertGaugeChart(alertCount) {
+    console.log('Creating Alert Gauge Chart with Count:', alertCount); // Debug log
+
+    // Create or update the gauge chart
+    Highcharts.chart('container3', {
+        chart: {
+            type: 'gauge', // Standard gauge chart
+            plotBackgroundColor: null,
+            plotBackgroundImage: null,
+            plotBorderWidth: 0,
+            plotShadow: false,
+            height: '80%' // Adjust height as needed
+        },
+        title: {
+            text: 'Alert Count'
+        },
+        pane: {
+            startAngle: -90,
+            endAngle: 89.9,
+            background: null,
+            center: ['50%', '75%'],
+            size: '110%'
+        },
+        yAxis: {
+            min: 0,
+            max: 200, // Adjust max value as needed
+            tickPixelInterval: 72,
+            tickPosition: 'inside',
+            tickColor: Highcharts.defaultOptions.chart.backgroundColor || '#FFFFFF',
+            tickLength: 20,
+            tickWidth: 2,
+            minorTickInterval: null,
+            labels: {
+                distance: 20,
+                style: {
+                    fontSize: '14px'
+                }
+            },
+            lineWidth: 0,
+            plotBands: [{
+                from: 0,
+                to: 130,
+                color: '#55BF3B', // green
+                thickness: 20,
+                borderRadius: '50%'
+            }, {
+                from: 150,
+                to: 200,
+                color: '#DF5353', // red
+                thickness: 20,
+                borderRadius: '50%'
+            }, {
+                from: 120,
+                to: 160,
+                color: '#DDDF0D', // yellow
+                thickness: 20
+            }]
+        },
+        series: [{
+            name: 'Alerts',
+            data: [alertCount], // Pass the alert count here
+            tooltip: {
+                valueSuffix: ' alerts'
+            },
+            dataLabels: {
+                format: '{y} alerts',
+                borderWidth: 0,
+                color: (
+                    Highcharts.defaultOptions.title &&
+                    Highcharts.defaultOptions.title.style &&
+                    Highcharts.defaultOptions.title.style.color
+                ) || '#333333',
+                style: {
+                    fontSize: '16px'
+                }
+            },
+            dial: {
+                radius: '80%',
+                backgroundColor: 'gray',
+                baseWidth: 12,
+                baseLength: '0%',
+                rearLength: '0%'
+            },
+            pivot: {
+                backgroundColor: 'gray',
+                radius: 6
+            }
+        }],
+        credits: {
+            enabled: false // Disable Highcharts credit
+        }
+    });
+
+    // Remove the dynamic updates
+    // setInterval(() => {
+    //     const chart = Highcharts.charts.find(c => c.renderTo.id === 'container3');
+    //     if (chart && !chart.renderer.forExport) {
+    //         const point = chart.series[0].points[0];
+    //         const inc = Math.round((Math.random() - 0.5) * 20);
+
+    //         let newVal = point.y + inc;
+    //         if (newVal < 0 || newVal > 200) {
+    //             newVal = point.y - inc;
+    //         }
+
+    //         point.update(newVal);
+    //     }
+    // }, 3000);
+}
+
 
 
 
@@ -417,3 +401,34 @@ async function fetchAndUpdateChart(url) {
         console.error('Error fetching issues:', error);
     }
 }
+
+
+
+async function updateAlertCountForScope(scopeUrl) {
+    const token = localStorage.getItem('jwtToken'); // Retrieve the token from local storage
+
+    try {
+        const response = await fetch('/alertCount', {
+            method: 'POST', // Ensure the method matches your endpoint
+            headers: {
+                'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+                'Content-Type': 'application/json' // Adjust content type if necessary
+            },
+            body: JSON.stringify({ url: scopeUrl }) // Send URL in the request body
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log('Full Response Data:', data); // Log the full response data
+        const alertCount = data.alertCount; // Ensure this is the correct property
+        console.log('Alert Count:', alertCount); // Debug log
+        renderAlertGaugeChart(alertCount); // Call the function to update the gauge chart
+
+    } catch (error) {
+        console.error('Error fetching alerts:', error);
+    }
+}
+
