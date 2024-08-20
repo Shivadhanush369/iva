@@ -415,11 +415,7 @@ height:100%;
       transition: transform 0.3s, box-shadow 0.3s; /* Smooth transition for hover effect */
     }
 
-    .card:hover {
-      transform: translateY(-10px); /* Lift card on hover */
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3), 0 12px 24px rgba(0, 0, 0, 0.25); /* Enhanced shadow on hover */
-    }
-
+  
 
 /* style for top dropdown */
   
@@ -580,6 +576,8 @@ select#scope {
 </head>
 <body>
    {{>navbar}}
+
+   {{>tables}}
 <div class="right-align-container">
     <select id="scope" onchange="toggleCustomInput()">
                     <option value="" disabled selected>Select your scope</option>
@@ -632,197 +630,6 @@ select#scope {
 
   
 
-  {{!-- <form id="scanForm">
-    <!-- <input type="text" id="targetUrl" placeholder="Enter target URL" required>
-    <button type="submit">Start Scan</button> -->
-  </form>
-  <div class="typewriter">
-    <div class="line">Welcome to my dashboard, this is a ZAP Scan Dashboard.</div>
-    <div class="line">It provides comprehensive security scan results.</div>
-    <div class="line">Review your scan history and detailed reports.</div>
-    <div class="line">Stay secure and updated with our real-time analysis.</div>
-</div> --}}
-  <div class="container" id="statusContainer">
-    
-  </div>
-  <div id="mySidenav" class="sidenav">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <a href="history.html">History</a>
-
-  </div>
-  <script>
-    const socket = io();
-    let componentId = 1;
-
-
-    
-    // Add event listener to the form
-//     document.getElementById('scanForm').addEventListener('submit', async (event) => {
-//         event.preventDefault();
-//         const targetUrl = document.getElementById('targetUrl').value;
-//         addStatusComponent(targetUrl + componentId);
-
-//         try {
-//             const response = await fetch(`/data/${encodeURIComponent(targetUrl)}`);
-// alert()
-//             if (!response.ok) {
-//                 const errorData = await response.json();
-//                 console.log('Error message:', errorData.message);
-//                 updateStatusComponent(targetUrl + componentId, 'dateLimit', errorData.message);
-//                 return;
-//             }
-
-//             const data = await response.json();
-//             console.log('Fetched data:', data); // Handle fetched data as needed
-//         } catch (error) {
-//             console.error('Error fetching data:', error);
-//         }
-
-//        //socket.emit('startScan', targetUrl);
-//     });
-
-
-
-socket.on('hideTypewriter', () => {
-      // Hide the typewriter div
-      document.querySelector('.typewriter').style.display = 'none';
-    });
-
-
-
-
-    socket.on('checkTime', async (targetUrl) => {
-      addStatusComponent(targetUrl + componentId);
-    try {
-     
-        const response = await fetch(`/data/${encodeURIComponent(targetUrl)}`);
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.log('Error message:', errorData.message);
-            updateStatusComponent(targetUrl + componentId, 'dateLimit', errorData.message);
-            return;
-        }
-
-        const data = await response.json();
-        console.log('Fetched data:', data); // Handle fetched data as needed
-        // You can update the UI or take other actions based on 'data' here
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
-
-    // You can emit another socket event or perform other actions here
-    socket.emit('startScan', targetUrl);
-});
-
-
-
-    // Listen for events
-    socket.on('startScan', (targetUrl) => {
-
-        addStatusComponent(targetUrl + componentId);
-        
-    });
-
-    socket.on('spiderStatus', (data) => {
-        const { url, status } = data;
-        updateStatusComponent(url + componentId, 'spider', status);
-    });
-
-    socket.on('scanStatus', (data) => {
-        const { url, status } = data;
-        updateStatusComponent(url + componentId, 'scan', status);
-    });
-
-    socket.on('scanComplete', (data) => {
-        const { url } = data;
-        showSpinner(url + componentId);
-    });
-
-    socket.on('generatedjson', (data) => {
-        const { url } = data;
-        hideSpinner(url + componentId);
-        const reportStatus = document.getElementById(`reportStatus-${encodeURIComponent(url + componentId)}`);
-        reportStatus.innerHTML = "Report Generated";
-        componentId = componentId+1;
-    });
-
-    socket.on('error', (data) => {
-        const { url, message } = data;
-        updateStatusComponent(url + componentId, 'error', message);
-        hideSpinner(url + componentId);
-    });
-
-    function addStatusComponent(url) {
-    const typew =document.getElementsByClassName("typewriter");
-    typew.innerHTML = " ";
-        const statusContainer = document.getElementById('statusContainer');
-        const encodedUrl = encodeURIComponent(url);
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.id = `status-${encodedUrl}`;
-        card.innerHTML = `
-            <h2>${url.slice(0, -1)}</h2>
-            <div>
-                <h3>Spider Status</h3>
-                <div class="progress-bar-container">
-                    <div id="spiderProgressBar-${encodedUrl}" class="progress-bar">0%</div>
-                </div>
-            </div>
-            <div>
-                <h3>Scan Status</h3>
-                <div class="progress-bar-container">
-                    <div id="scanProgressBar-${encodedUrl}" class="progress-bar">0%</div>
-                </div>
-            </div>
-            <div id="spinner-${encodedUrl}" class="spinner hidden"></div>
-            <div id="reportStatus-${encodedUrl}"></div>
-            <div id="error-${encodedUrl}" class="error-message"></div>
-        `;
-        statusContainer.appendChild(card);
-    }
-
-    function updateStatusComponent(url, type, status) {
-        const encodedUrl = encodeURIComponent(url);
-        if (type == 'dateLimit') {
-            componentId =componentId+ 1;
-
-            const card = document.getElementById(`status-${encodedUrl}`);
-            card.innerHTML = '';
-
-            const site = document.createElement('div');
-            site.innerHTML = url.slice(0, -1);
-
-            card.appendChild(site);
-
-            const description = document.createElement('div');
-            description.innerHTML = "<p>This website has already been scanned</p>";
-            card.appendChild(description);
-        }
-
-        if (type === 'error') {
-            document.getElementById(`error-${encodedUrl}`).innerText = `Error: ${status}`;
-        } else {
-            const progressBar = document.getElementById(`${type}ProgressBar-${encodedUrl}`);
-            if (progressBar) {
-                progressBar.style.width = `${status}%`;
-                progressBar.innerText = `${status}%`;
-            }
-        }
-    }
-
-    function showSpinner(url) {
-        const encodedUrl = encodeURIComponent(url);
-        const spinner = document.getElementById(`spinner-${encodedUrl}`);
-        spinner.style.display = 'block';
-    }
-
-    function hideSpinner(url) {
-        const encodedUrl = encodeURIComponent(url);
-        const spinner = document.getElementById(`spinner-${encodedUrl}`);
-        spinner.style.display = 'none';
-    }
-</script>
 
 <span  class="nav-icon" style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; </span>
 

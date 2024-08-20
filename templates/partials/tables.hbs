@@ -1,0 +1,125 @@
+<div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <button class="btn btn-primary mr-2">New Scan</button>
+                <button class="btn btn-secondary mr-2">Stop Scans</button>
+                <button class="btn btn-danger mr-2">Delete Scans</button>
+                <button class="btn btn-warning mr-2">Generate Report</button>
+                <button class="btn btn-info mr-2">Compare Scans</button>
+                <button class="btn btn-success">Export to</button>
+            </div>
+            <div>
+                <input type="text" class="form-control" placeholder="Filter">
+            </div>
+        </div>
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Target</th>
+                    <th scope="col">Target Description</th>
+                    <th scope="col">Scan Profile</th>
+                    <th scope="col">Schedule</th>
+                    <th scope="col">Vulnerabilities</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="checkbox" /> <a href="http://aspnet.testinvicti.com/">http://aspnet.testinvicti.com/</a></td>
+                    <td>asp net test</td>
+                    <td>Critical / High Risk</td>
+                    <td>Last run on Feb 26, 2024, 1:10:48 AM</td>
+                    <td>
+                        <span class="badge badge-danger">6</span>
+                        <span class="badge badge-warning">5</span>
+                        <span class="badge badge-secondary">2</span>
+                    </td>
+                    <td><span class="badge badge-warning">Completed</span></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" /> <a href="http://php.testinvicti.com/">http://php.testinvicti.com/</a></td>
+                    <td>PHP - Testinvicti</td>
+                    <td>Full Scan</td>
+                    <td>Last run on Jan 24, 2024, 9:22:34 PM</td>
+                    <td>
+                        <span class="badge badge-danger">3</span>
+                        <span class="badge badge-warning">1</span>
+                        <span class="badge badge-secondary">0</span>
+                    </td>
+                    <td><span class="badge badge-warning">Completed</span></td>
+                </tr>
+                <tr>
+                    <td><input type="checkbox" /> <a href="http://aspnet.testinvicti.com/">http://aspnet.testinvicti.com/</a></td>
+                    <td>asp net test</td>
+                    <td>Full Scan</td>
+                    <td>Last run on Aug 21, 2023, 1:42:33 AM</td>
+                    <td>
+                        <span class="badge badge-danger">4</span>
+                        <span class="badge badge-warning">5</span>
+                        <span class="badge badge-secondary">1</span>
+                    </td>
+                    <td><span class="badge badge-warning">Completed</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+
+    <script>
+
+function populateTable(scan) {
+   
+   
+        const tbody = document.querySelector('table tbody');
+        tbody.innerHTML = ''; // Clear any existing rows
+
+        scan.forEach(scan => {
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td><input type="checkbox" /> <a href="${scan.url}">${scan.url}</a></td>
+                <td>${scan.username}</td>
+                <td>${scan.scan_profile}</td>
+                <td>${scan.date}</td>
+                <td>
+                    <span class="badge badge-danger">${scan.vulnerability.Medium}</span>
+                    <span class="badge badge-warning">${scan.vulnerability.High}</span>
+                    <span class="badge badge-secondary">${scan.vulnerability.Low}</span>
+                </td>
+                <td><span class="badge badge-${scan.status === 'Completed' ? 'success' : 'danger'}">${scan.status}</span></td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+    
+
+    async function fetchData() {
+            try {
+                const token = localStorage.getItem('jwtToken');
+
+                // Set up fetch request with headers
+                const response = await fetch('/history', {
+                    method: 'GET', // specify the HTTP method
+                    headers: {
+                        'Authorization': `Bearer ${token}`, // include the retrieved token in the Authorization header
+                        'Content-Type': 'application/json' // adjust content type if necessary
+                        // add more headers as needed
+                    }
+                });
+
+                // Handle the response
+                if (response.ok) {
+                    const data = await response.json(); // or response.text() depending on the response content
+                    populateTable(data);
+                }
+            }  catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        fetchData();
+    </script>

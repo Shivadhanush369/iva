@@ -1,0 +1,400 @@
+
+      <main>
+           <h1>Dashbord</h1>
+        
+
+        
+   
+            <div class="compareScanPopUp" id="comparePopUp">
+        <button class="close-btn-compare-popup" onclick="closePopup()">X</button>
+        <div class="report" id="report1">
+            <h2>Scan Report 1</h2>
+            <p><strong>Username:</strong> avekshaa</p>
+            <p><strong>URL:</strong> <a href="https://www.abc.com/" target="_blank">https://www.abc.com/</a></p>
+            <p><strong>Date:</strong> 2024-08-01T07:32:38.591Z</p>
+            <p><strong>Scan Profile:</strong> FullScan</p>
+            <p><strong>Status:</strong> Completed</p>
+            <p><strong>Medium Alerts:</strong></p>
+            <ul class="alerts-list" id="medium-alerts-report1">
+                <!-- Medium alert names will be inserted here -->
+            </ul>
+        </div>
+        <div class="report" id="report2">
+            <h2>Scan Report 2</h2>
+            <p><strong>Username:</strong> avekshaa</p>
+            <p><strong>URL:</strong> <a href="https://www.abc.com/" target="_blank">https://www.abc.com/</a></p>
+            <p><strong>Date:</strong> 2024-08-01T07:32:38.591Z</p>
+            <p><strong>Scan Profile:</strong> FullScan</p>
+            <p><strong>Status:</strong> Completed</p>
+            <p><strong>Medium Alerts:</strong></p>
+            <ul class="alerts-list" id="medium-alerts-report2">
+                <!-- Medium alert names will be inserted here -->
+            </ul>
+        </div>
+    </div>
+           <div id="modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modle-body">
+         <div class="card card-left">
+            <div class="card-header">Issues</div>
+            <!-- Dynamic content will be inserted here -->
+        </div>
+        <div class="card card-right">
+            <div class="card-header">Issue Details</div>
+            <p>Select an issue from the left to see details here.</p>
+            <!-- Details will be inserted here dynamically -->
+        </div>
+        </div>
+        <button onclick="closeModal()">Close</button>
+    </div>
+    
+</div>
+
+<div class="scopesection">
+           <div class="date">
+             <input type="date" >
+             
+           </div>
+                <div class="right-align-container">
+                  <select id="scope" onchange="toggleCustomInput()">
+                    <option value="" disabled selected>Select your scope</option>
+                    
+                </select>
+                
+                </div>
+</div>
+        <div class="insights">
+
+           <!-- start seling -->
+            <div class="sales">
+               <span class="material-symbols-sharp">trending_up</span>
+               <div class="middle">
+
+                 <div class="left">
+                   <h3>CWEID</h3>
+                   <h1>select the scope</h1>
+                 </div>
+                 
+
+               </div>
+               <small>Last 24 Hours</small>
+            </div>
+           <!-- end seling -->
+              <!-- start expenses -->
+              <div class="scans">
+               <span class="material-symbols-outlined">
+barcode_scanner
+</span>
+                <div class="middle">
+ 
+                  <div class="left">
+                    <h3>Total Scans</h3>
+                    <h1>select the scope</h1>
+                  </div>
+                   
+ 
+                </div>
+                <small>Last 24 Hours</small>
+             </div>
+            <!-- end seling -->
+               <!-- start seling -->
+               <div class="alerts">
+                
+               <span class="material-symbols-outlined">warning</span>
+                <div class="middle">
+ 
+                  <div class="left">
+                    <h3>Total Alerts</h3>
+                    <h1>select the scope</h1>
+                  </div>
+                </div>
+                <small>Last 24 Hours</small>
+             </div>
+            <!-- end seling -->
+
+        </div>
+       <!-- end insights -->
+         
+      <div class="recent_order">
+         <h2>Recent </h2>
+         <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <button class="btn btn-primary mr-2">New Scan</button>
+                <button class="btn btn-secondary mr-2">Stop Scans</button>
+                <button class="btn btn-danger mr-2">Delete Scans</button>
+                <button class="btn btn-warning mr-2">Generate Report</button>
+                <button id="comparebutton"class="btn btn-info mr-2">Compare Scans</button>
+                <button class="btn btn-success">Export to</button>
+            </div>
+            <div >
+         <table class="table table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Check</th>
+                    <th scope="col">ScanId</th>
+                    <th scope="col">Target</th>
+                    <th scope="col">Target Description</th>
+                    <th scope="col">Scan Profile</th>
+                    <th scope="col">Schedule</th>
+                    <th scope="col">Vulnerabilities</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>no data to show</td>
+                    <td>no data</td>
+                    <td>no data</td>
+                    <td>no data</td>
+                    <td>
+                      no data to show 
+                    </td>
+                    <td><span class="badge badge-warning">no data</span></td>
+                    <td><span class="badge badge-warning">no data</span></td>
+                </tr>
+                  <tr>
+                    <td>no data to show</td>
+                    <td>no data</td>
+                    <td>no data</td>
+                    <td>no data</td>
+                    <td>
+                      no data to show 
+                    </td>
+                    <td><span class="badge badge-warning">no data</span></td>
+                    <td><span class="badge badge-warning">no data</span></td>
+                </tr>
+                   <tr>
+                    <td>no data to show</td>
+                    <td>no data</td>
+                    <td>no data</td>
+                    <td>no data</td>
+                    <td>
+                      no data to show 
+                    </td>
+                    <td><span class="badge badge-warning">no data</span></td>
+                    <td><span class="badge badge-warning">no data</span></td>
+                </tr>
+            </tbody>
+        </table>
+         <a href="#">Show All</a>
+      </div>
+
+      </main>
+
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+
+    <script>
+    // since this were shifted to newscript.js im commenting this , their table data is populated based on scope
+/*
+function populateTable(scan) {
+   
+   
+        const tbody = document.querySelector('table tbody');
+        tbody.innerHTML = ''; // Clear any existing rows
+
+        scan.forEach(scan => {
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+            <td><input type="checkbox" value="${scan.scanid}"/> ${scan.scanid}</td>
+                <td> <a href="${scan.url}">${scan.url}</a></td>
+                <td>${scan.username}</td>
+                <td>${scan.scan_profile}</td>
+                <td>${scan.date}</td>
+                <td>
+                    <span class="badge badge-danger">${scan.vulnerability.High}</span>
+                    <span class="badge badge-warning">${scan.vulnerability.Medium}</span>
+                    <span class="badge badge-secondary">${scan.vulnerability.Low}</span>
+                    
+                </td>    
+            `;
+
+            tbody.appendChild(row);
+
+             const highBadge = row.querySelector('.badge-danger');
+        const mediumBadge = row.querySelector('.badge-warning');
+        const lowBadge = row.querySelector('.badge-secondary');
+
+        highBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.high));
+        mediumBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.medium));
+        lowBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.low));
+        });
+
+    }*/
+    
+    // since this were shifted to newscript.js im commenting this , their table data is populated based on scope
+  /*  async function fetchData() {
+            try {
+                const token = localStorage.getItem('jwtToken');
+
+                // Set up fetch request with headers
+                const response = await fetch('/history', {
+                    method: 'POST', // specify the HTTP method
+                    headers: {
+                        'Authorization': `Bearer ${token}`, // include the retrieved token in the Authorization header
+                        'Content-Type': 'application/json' // adjust content type if necessary
+                        // add more headers as needed
+                    }
+                });
+
+                // Handle the response
+                if (response.ok) {
+                    const data = await response.json(); // or response.text() depending on the response content
+                    populateTable(data);
+                }
+            }  catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        fetchData(); */
+
+function handleBadgeClick(alertData) {
+
+  const leftCard = document.querySelector('.card-left');
+    const rightCard = document.querySelector('.card-right');
+leftCard.innerHTML = '<div class="card-header">Issues</div>';
+
+    // Create and append issue names to the left card
+    alertData.forEach((alert) => {
+        const alertElement = document.createElement('div');
+        alertElement.className = 'name';
+        alertElement.textContent = alert.name;
+        alertElement.addEventListener('click', () => displayDetails(alert));
+        leftCard.appendChild(alertElement);
+    });
+
+    // Function to display alert details on the right card
+    function displayDetails(selectedAlert) {
+        rightCard.innerHTML = `
+        <div class="details-section">
+            <h2>Issue Details</h2>
+            <p><strong>Url:</strong> ${selectedAlert.url}</p>
+            <p><strong>Alert Name:</strong> ${selectedAlert.name}</p>
+            <p><strong>Description:</strong> ${selectedAlert.description}</p>
+            <p><strong>Risk Description:</strong> ${selectedAlert.risk}</p>
+            <p><strong>Solution:</strong> ${selectedAlert.solution}</p>
+            <p><strong>CWE ID:</strong> ${selectedAlert.cweid}</p>
+            <p><strong>WASC ID:</strong> ${selectedAlert.wascid}</p>
+            </div>
+        `;
+    }
+    const modal = document.getElementById('modal');
+   // const modalMessage = document.getElementById('modal-message');
+    const body = document.querySelector('body');
+    
+    // Apply blur effect to the body
+    body.classList.add('blur');
+    
+    // Show the modal with the corresponding risk level
+   // modalMessage.textContent = riskLevel;
+    modal.style.display = 'flex';
+}
+
+function getRiskClass(risk) {
+    switch (risk) {
+        case 'High':
+            return 'risk-high';
+        case 'Medium':
+            return 'risk-medium';
+        case 'Low':
+            return 'risk-low';
+        case 'Informational':
+            return 'risk-info';
+        default:
+            return '';
+    }
+}
+function closeModal() {
+    const modal = document.getElementById('modal');
+    const body = document.querySelector('body');
+    const cards =document.getElementsByClassName('card-header');
+   const rightCard = document.querySelector('.card-right');
+    rightCard.innerHTML=`<div class="card-header">Issue Details</div>
+            <p>Select an issue from the left to see details here.</p>`;
+    cards.innerHTML=' ';
+    
+    // Remove blur effect from the body
+    body.classList.remove('blur');
+    
+    // Hide the modal
+    modal.style.display = 'none';
+}
+
+// Attach event listeners to the modal close button
+document.querySelector('#modal button').addEventListener('click', closeModal);
+
+
+const reportData1 = {
+            // Your reportData1 object here...
+        };
+
+        const reportData2 = {
+            // Your reportData2 object here...
+        };
+
+        const displayMediumAlerts = (report, elementId) => {
+            const mediumAlerts = report.filteredAlerts.medium.map(alert => `<li>${alert.name}</li>`).join('');
+            document.getElementById(elementId).innerHTML = mediumAlerts;
+        };
+
+        const compareReports = () => {
+            displayMediumAlerts(reportData1, 'medium-alerts-report1');
+            displayMediumAlerts(reportData2, 'medium-alerts-report2');
+
+            const mediumNames1 = reportData1.filteredAlerts.medium.map(alert => alert.name);
+            const mediumNames2 = reportData2.filteredAlerts.medium.map(alert => alert.name);
+
+            mediumNames1.forEach((name, index) => {
+                if (mediumNames2.indexOf(name) === -1) {
+                    document.querySelector(`#medium-alerts-report1 li:nth-child(${index + 1})`).classList.add('highlight');
+                }
+            });
+
+            mediumNames2.forEach((name, index) => {
+                if (mediumNames1.indexOf(name) === -1) {
+                    document.querySelector(`#medium-alerts-report2 li:nth-child(${index + 1})`).classList.add('highlight');
+                }
+            });
+        };
+
+        const openPopup = () => {
+            document.getElementById('comparePopUp').style.display = 'flex';
+              const body = document.querySelector('body');
+    
+    // Apply blur effect to the body
+    body.classList.add('blur');
+            compareReports();
+        };
+
+        const closePopup = () => {
+            document.getElementById('comparePopUp').style.display = 'none';
+              const body = document.querySelector('body');
+    
+    // Apply blur effect to the body
+    body.classList.remove('blur');
+        };
+    document.getElementById('comparebutton').addEventListener('click', () => {
+    // Get all checkboxes
+    const checkboxes = document.querySelectorAll('table tbody input[type="checkbox"]');
+    
+    // Filter and count the checked checkboxes, and collect their values
+    const checkedCheckboxes = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+    const checkedCount = checkedCheckboxes.length;
+    const checkedValues = checkedCheckboxes.map(checkbox => checkbox.value).join(', ');
+
+/* make an api call to get data of scan id and populate in compare scans */
+
+
+    // Show alert with count and values
+    if (checkedCount === 2) {
+        alert(`Yes\nChecked Count: ${checkedCount}\nValues: ${checkedValues}`);
+    } else {
+        alert(`No\nChecked Count: ${checkedCount}\nValues: ${checkedValues}`);
+    }
+});
+
+
+    </script>

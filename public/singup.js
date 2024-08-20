@@ -1,3 +1,4 @@
+
 document.getElementById('signupForm').addEventListener('submit', function(event) {
     event.preventDefault(); // Prevent form submission for now
     
@@ -61,3 +62,4 @@ function isValidEmail(email) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
 }
+

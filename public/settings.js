@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 document.getElementById('settingsForm').addEventListener('submit', function(event) {
     event.preventDefault(); 
     // Prevent the default form submission
-  alert("hgh");
+
     // Collect form data
     let scope = document.getElementById('scope').value;
     const cvssScore = document.getElementById('cvssScore').value;
@@ -45,15 +45,15 @@ document.getElementById('settingsForm').addEventListener('submit', function(even
     
     if (scope === '*')
     {
-        alert("f");
+       
         scope = customScopeInput.value;
         if (!scope.startsWith('https://')) {
-            alert("s");
+            
             scope = 'https://' + scope;
         }
         if (!scope.endsWith('/')) {
 
-            alert("t");
+         
             scope += '/';
         }
     }
@@ -66,7 +66,7 @@ document.getElementById('settingsForm').addEventListener('submit', function(even
     };
 
     const token = localStorage.getItem("jwtToken");
-    alert(token)
+
     // Perform the API call
     fetch('/settingsb', {
         method: 'POST',

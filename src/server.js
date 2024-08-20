@@ -16,14 +16,14 @@ const onemonth = require('./models/onemonth');
 const Report = require('./models/Report');
 const oneday = require('./models/oneday');
 const subscribe = require('./models/subscribe');
-const ReportSchema = require('./models/ReportSchema'); 
 const secretKey = "secretKey";
 const NodeCache = require('node-cache');
+const { URLSearchParams } = require("url");
 // Middleware to parse JSON bodies
 
 const cache = new NodeCache({ stdTTL: 300, checkperiod: 60 }); // Cache for 5 minutes
 
-const template_path = path.join(__dirname, "../templates/views");
+
 const partials_path = path.join(__dirname, "../templates/partials");
  
 
@@ -32,7 +32,7 @@ app.use(express.json());
 connectDB();
 app.use(express.static('public'));
 app.set("view engine","hbs");
-app.set("views", template_path);
+app.set("views", [path.join(__dirname, "../templates/views"),path.join(__dirname, "../templates/partials")]);
 hbs.registerPartials(partials_path);
 app.get("/", (req, res) => {
     res.render("index");
@@ -100,12 +100,14 @@ app.post("/login", (req, res) => {
 });
 
 
-app.get("/history",verifyToken,async (req,res)=>{
+app.post("/history",verifyToken,async (req,res)=>{
     const { name } = req.authData;  // Assuming `authData` contains user information from JWT payload
-     console.log(req.authData);
+    const { url } = req.body;
+    console.log(url);
     try {
         // Fetch history data filtered by username "shiva"
-        const histories = await History.find({ username: name });
+        const histories = await History.find({ username: name, url: url }).select('-_id');
+
         res.json(histories);
     } catch (error) {
         console.error(error);
@@ -196,6 +198,10 @@ app.post("/settingsb", verifyToken, async (req, res) => {
 
 app.get("/dashboard.html",(req, res) => {
     res.render("dashboard");
+});
+
+app.get("/newdashboard.html",(req, res) => {
+    res.render("newdashboard");
 });
 app.get("/history.html",(req, res) => {
     res.render("history");
@@ -311,7 +317,20 @@ app.post('/alertCount', async (req, res) => {
             if (report.report && Array.isArray(report.report.site)) {
                 report.report.site.forEach(site => {
                     if (Array.isArray(site.alerts)) {
-                        alertCount += site.alerts.length;
+                       site.alerts.forEach(instance =>{
+                         let riskdesc =instance.riskdesc;
+                         
+                         if(riskdesc.includes("Informational"))
+                         {
+
+                         }
+                     else
+                        {
+                            
+                            alertCount += instance.instances.length;
+                        }
+                       });
+                        
                     }
                 });
             }
@@ -329,6 +348,20 @@ setInterval(() => {
     cache.flushAll();
 }, 300000);
 
-app.listen(5001, () => {
+app.listen(5002, () => {
     console.log("App is running on port 5000");
 });
+
+app.get("/manual", (req, res) => {
+    res.render("manual");
+});
+
+app.get('/partials/:name', (req, res) => {
+    const name = req.params.name;
+    console.log(name);
+    res.render(name); // Render the requested partial
+  });
+  
+//new code
+
+  

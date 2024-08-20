@@ -3,13 +3,17 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const { URL } = require('url');
 const ZAP_HOST = 'http://localhost:8080'; // Change this to your ZAP host
-const API_KEY = 'm54cpsd8nr7elj7q6mdtei1rfd';
+const API_KEY = 'sf1l9d7pvavoh4qfbkkvrh14h3';
 const History = require('../models/History');
 const Report = require('../models/Report');
 // Define the History model (adjust the schema according to your needs)
 
 
 async function spiderUrl(url) {
+   
+   
+   
+    
     try {
         const response = await axios.get(`${ZAP_HOST}/JSON/spider/action/scan/`, {
             params: {
@@ -84,16 +88,25 @@ async function generateReport(Url,scanid) {
         fs.writeFileSync(`${domain}.json`, report1);
 
         const report = response.data;
+        report.scanId = scanid;
         report.url  = Url;
         console.log("Report generated");
        // save report in mongodb
       const reportDB = new Report({report});
       await reportDB.save();
-        
+     const vulnerabilities= await getAlertSummary(parsedUrl,API_KEY);
+
+    
         // Save history of report to MongoDB
         const url = Url.url;
         const username = Url.username;
-        const history = new History({ username,url, date: new Date() });
+      const vulnerability = vulnerabilities.alertsSummary;
+      const detailes = await getAlertsByRisk(3,url);
+    
+      const filteredAlerts = await categorizeAlertsByRisk(detailes);
+
+
+     const history = new History({ username,url, date: new Date() ,vulnerability,filteredAlerts,scanid});
         await history.save();
         
 
@@ -135,4 +148,82 @@ async function start(targetUrl) {
     }
 }
 
+
+
+
+
+
+async function getAlertSummary(baseUrl, apiKey) {
+
+    
+   
+    try {
+      const response = await axios.get(`http://localhost:8080/JSON/alert/view/alertsSummary/`, {
+        headers: {
+          'Accept': 'application/json'
+        },
+        params: {
+          apikey: apiKey,
+          baseurl: baseUrl // Optionally filter by base URL
+        }
+      });
+  
+      const alertSummary = response.data;
+      console.log("down "+JSON.stringify(alertSummary));
+      return alertSummary;
+    } catch (error) {
+      console.error('Error fetching alert summary:', error);
+    }
+  }
+  const getAlertsByRisk = async (risk,url) => {
+    try {
+        const response = await axios.get(`${ZAP_HOST}/JSON/core/view/alerts`, {
+            params: {
+                apikey: API_KEY,
+                baseurl: url, // Leave empty to get all alerts
+                start: 0,
+                count: 1000,
+                risk
+            }
+        });
+        return response.data.alerts;
+    } catch (error) {
+        console.error('Error fetching alerts:', error);
+        throw error;
+    }
+};
+
+const categorizeAlertsByRisk = (alerts) => {
+
+
+
+    const categorizedAlerts = {
+        high: [],
+        medium: [],
+        low: [],
+        informational: []
+    };
+
+
+    alerts.forEach(alert => {
+        switch (alert.risk) {
+            case 'High': // High
+                categorizedAlerts.high.push(alert);
+                break;
+            case 'Medium': // Medium
+                categorizedAlerts.medium.push(alert);
+                break;
+            case 'Low': // Low
+                categorizedAlerts.low.push(alert);
+                break;
+            case 'Informational': // Informational
+                categorizedAlerts.informational.push(alert);
+                break;
+            default:
+                console.warn(`Unknown risk level: ${alert.risk}`);
+        }
+    });
+
+    return categorizedAlerts;
+};
 module.exports = { start };
