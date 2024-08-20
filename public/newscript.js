@@ -155,6 +155,17 @@ async function donutchart(Url) {
         }
 
         const data = await response.json();
+        if (typeof data === 'object' && data !== null) {
+            const length = Object.keys(data).length;
+            const totalcweH3 = document.querySelector('.sales .middle .left h1');
+
+        totalcweH3.innerHTML=length;
+            console.log(`Number of key-value pairs: ${length}`);
+        } else {
+            console.log("The data is not a JSON object.");
+        }
+        
+        
         
         if (data) {
             initializeCharts(data);
