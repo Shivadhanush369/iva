@@ -703,10 +703,10 @@ MEDIA QUERY PHONE
     color: #fff;
 }
 
-.badge-danger { background-color: #dc3545; }
+.badge-danger { background-color: #ec0a20; }
 .badge-warning { background-color: #ffc107; }
-.badge-secondary { background-color: #6c757d; }
-.badge-info { background-color: #17a2b8; }
+.badge-secondary { background-color: #47da1a; }
+.badge-info { background-color: #17b81f; }
 .badge-success { background-color: #28a745; }
 
 
@@ -755,7 +755,7 @@ MEDIA QUERY PHONE
 
 /* Modal content settings */
 .modal-content {
-    
+    position:relative;
     background: white;
     padding: 20px;
     border-radius: 5px;
@@ -974,6 +974,25 @@ input[type="radio"] {
             justify-content: center;
         }
 
-        .close-btn-compare-popup:hover {
-            background: #c9302c;
-        }
+        .close-button {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          font-size: 28px; /* Increase the font size for a bigger "X" */
+          font-weight: 700; /* Make the "X" bold */
+          color: #333; /* Use a slightly darker color for a cleaner look */
+          border: none;
+          background: none;
+          cursor: pointer;
+          padding: 5px; /* Add some padding around the "X" */
+          line-height: 1;
+      }
+      
+      .close-button:hover {
+          color: #ff0000; /* Optional: Change color on hover */
+          transform: scale(1.1); /* Slightly increase size on hover for effect */
+      }
+      
+      .close-button:focus {
+          outline: none; /* Remove the default outline */
+      }

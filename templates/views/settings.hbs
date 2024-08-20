@@ -5,97 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Professional Form</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-       
+  <style>
+   
+h1{
+  font-weight: 800;
+  font-size: 2.8rem;
+  margin-top: 4%;
+}
+    #container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align items to the start (top) */
+    height: 100vh; /* Full viewport height */
+    background-color: #f5f5f5; /* Light background color for better visibility */
+}
 
-        :root {
-            --primary-color: #141E30;
-            --secondary-color: #243B55;
-            --bg-color: #1F2739;
-            --form-bg-color: #ffffff;
-            --input-bg-color: #f4f4f4;
-            --button-bg-color: #141E30;
-            --button-text-color: #ffffff;
-            --border-radius: 8px;
-        }
+#settingdiv {
+    margin-top: 20px; /* Adjust as needed to move upward */
+    width: 100%;
+    max-width: 600px; /* Set a maximum width if needed */
+}
 
-       #container{
-        background: var(--form-bg-color);
-        margin-top: 10%;
-        justify-content: space-around;
-       }
+.form-container {
+    background: #fff; /* White background for the form */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-        .container {
-            
-            border-radius: var(--border-radius);
-          
-        }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            justify-content: center; /* Center horizontally */
-  align-items: center;     /* Center vertically */
- 
-        }
+   #scope{
+    margin-left:0;
+   }
+    .note {
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #666;
+    }
 
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
+    select, input[type="text"] {
+        width: calc(100% - 20px);
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+    }
 
-        input, select {
-            background: var(--input-bg-color);
-            border: 1px solid #ccc;
-            border-radius: var(--border-radius);
-            padding: 12px;
-            font-size: 16px;
-            width: 100%;
-            transition: border-color 0.3s ease;
-        }
+    button {
+        justify-content: center;
+        width: 50%;
+        padding: 10px;
+        background-color: #007bff; /* Blue background color for the button */
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+    }
 
-        input:focus, select:focus {
-            border-color: var(--primary-color);
-            outline: none;
-        }
+    button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+</style>
 
-        button {
-            border-radius: var(--border-radius);
-            border: none;
-            background: var(--button-bg-color);
-            color: var(--button-text-color);
-            font-size: 16px;
-            font-weight: 600;
-            padding: 12px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-        }
-
-        button:hover {
-            background-color: var(--secondary-color);
-        }
-
-        button:active {
-            transform: scale(0.95);
-        }
-
-        #customScope {
-            display: none;
-        }
-
-        .note {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-    </style> 
 </head>
 <body>
+    <h1>Settings</h1>
     <div class="container" id="container">
         <div id="settingdiv" class="form-container sign-up-container">
             <form id="settingsForm">
-                <h1>Settings</h1>
+                
                 
                 <div class="note">Enter the fully qualified domain name if needed.</div>
                

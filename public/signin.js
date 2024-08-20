@@ -37,7 +37,7 @@ document.getElementById('signInForm').addEventListener('submit', function(event)
          // Example alert, replace with UI feedback
         // Redirect to dashboard or next page
         setTimeout(() => {
-            window.location.href = '/dashboard.html'; // Adjust the URL as per your setup
+            window.location.href = '/newdashboard.html'; // Adjust the URL as per your setup
         }, 5000); // Adjust the URL as per your setup
     })
     .catch(error => {
