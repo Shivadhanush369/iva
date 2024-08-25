@@ -1,0 +1,236 @@
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+  h1 {
+    font-weight: 800;
+    font-size: 2.8rem;
+    margin-top: 5%;
+  }
+
+  #scanForm {
+    display: flex;
+    margin-top: 50px;
+    justify-content: left;
+  }
+
+  #targetUrl  {
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  #scanForm button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+</style>
+
+<div class="containermanual">
+  <h1>Manual Scan</h1>
+
+  <form id="scanForm">
+     <select id="targetUrl">
+                    <option value="" disabled selected>Select your scope</option>
+                    
+                </select>
+   {{!-- <input type="text" id="targetUrl" placeholder="Enter target URL" required> --}}
+    <button type="submit">Start Scan</button>
+  </form>
+
+  <div id="statusContainer" class="container"></div>
+</div>
+
+<script>
+   const socket = io();
+    let componentId = 1;
+
+    // Add event listener to the form
+    document.getElementById('scanForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      let targetUrl = document.getElementById('targetUrl').value;
+      if (!/^https?:\/\//i.test(targetUrl)) {
+    targetUrl = 'http://' + targetUrl;
+}
+
+      addStatusComponent(targetUrl + componentId);
+         const token = localStorage.getItem('jwtToken');
+      try {
+        // Send the target URL to the server
+        socket.emit('startScan', targetUrl,token);
+
+        // Handle response or update the UI
+      } catch (error) {
+        console.error('Error starting scan:', error);
+      }
+    });
+
+    socket.on('hideTypewriter', () => {
+      document.querySelector('.typewriter').style.display = 'none';
+    });
+
+    socket.on('checkTime', async (targetUrl) => {
+      addStatusComponent(targetUrl + componentId);
+      try {
+        const response = await fetch(`/data/${encodeURIComponent(targetUrl)}`);
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.log('Error message:', errorData.message);
+          updateStatusComponent(targetUrl + componentId, 'dateLimit', errorData.message);
+          return;
+        }
+        const data = await response.json();
+        console.log('Fetched data:', data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    });
+
+    socket.on('startScan', (targetUrl) => {
+      addStatusComponent(targetUrl + componentId);
+    });
+
+    socket.on('spiderStatus', (data) => {
+      const { url, status } = data;
+      updateStatusComponent(url + componentId, 'spider', status);
+    });
+
+    socket.on('scanStatus', (data) => {
+      const { url, status } = data;
+      updateStatusComponent(url + componentId, 'scan', status);
+    });
+
+    socket.on('scanComplete', (data) => {
+      const { url } = data;
+      showSpinner(url + componentId);
+    });
+
+    socket.on('generatedjson', (data) => {
+      const { url } = data;
+      hideSpinner(url + componentId);
+      const reportStatus = document.getElementById(`reportStatus-${encodeURIComponent(url + componentId)}`);
+      reportStatus.innerHTML = "Report Generated";
+      componentId = componentId + 1;
+    });
+
+    socket.on('error', (data) => {
+        
+      const { url, message } = data;
+      updateStatusComponent(url + componentId, 'error', message);
+      hideSpinner(url + componentId);
+    });
+
+    function addStatusComponent(url) {
+      const statusContainer = document.getElementById('statusContainer');
+      const encodedUrl = encodeURIComponent(url);
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.id = `status-${encodedUrl}`;
+      card.innerHTML = `
+        <h2>${url.slice(0, -1)}</h2>
+        <div>
+          <h3>Spider Status</h3>
+          <div class="progress-bar-container">
+            <div id="spiderProgressBar-${encodedUrl}" class="progress-bar">0%</div>
+          </div>
+        </div>
+        <div>
+          <h3>Scan Status</h3>
+          <div class="progress-bar-container">
+            <div id="scanProgressBar-${encodedUrl}" class="progress-bar">0%</div>
+          </div>
+        </div>
+        <div id="spinner-${encodedUrl}" class="spinner hidden"></div>
+        <div id="reportStatus-${encodedUrl}"></div>
+        <div id="error-${encodedUrl}" class="error-message"></div>
+      `;
+      statusContainer.appendChild(card);
+    }
+
+    function updateStatusComponent(url, type, status) {
+      const encodedUrl = encodeURIComponent(url);
+      if (type == 'dateLimit') {
+        componentId = componentId + 1;
+
+        const card = document.getElementById(`status-${encodedUrl}`);
+        card.innerHTML = '';
+
+        const site = document.createElement('div');
+        site.innerHTML = url.slice(0, -1);
+
+        card.appendChild(site);
+
+        const description = document.createElement('div');
+        description.innerHTML = "<p>This website has already been scanned</p>";
+        card.appendChild(description);
+      }
+
+      if (type === 'error') {
+        document.getElementById(`error-${encodedUrl}`).innerText = `Error: ${status}`;
+      } else {
+        const progressBar = document.getElementById(`${type}ProgressBar-${encodedUrl}`);
+        if (progressBar) {
+          progressBar.style.width = `${status}%`;
+          progressBar.innerText = `${status}%`;
+        }
+      }
+    }
+
+    function showSpinner(url) {
+      const encodedUrl = encodeURIComponent(url);
+      const spinner = document.getElementById(`spinner-${encodedUrl}`);
+      spinner.classList.remove('hidden');
+    }
+
+    function hideSpinner(url) {
+      const encodedUrl = encodeURIComponent(url);
+      const spinner = document.getElementById(`spinner-${encodedUrl}`);
+      spinner.classList.add('hidden');
+    }
+
+    function openNav() {
+      document.getElementById("mySidenav").style.width = "200px";
+    }
+
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+    }
+
+
+document.addEventListener('DOMContentLoaded', async (event) => {
+    const token = localStorage.getItem('jwtToken'); // Retrieve the token from local storage
+
+    try {
+        // Fetch scope options with authorization header
+        const response = await fetch('scopes', {
+            method: 'GET', // Specify the HTTP method
+            headers: {
+                'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+                'Content-Type': 'application/json' // Adjust content type if necessary
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        const scopeSelect = document.getElementById('targetUrl');
+
+        data.forEach(scope => {
+            const option = document.createElement('option');
+            option.value = scope.url;
+            option.text = scope.name;
+            scopeSelect.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error('Error fetching scopes:', error);
+    }
+});
+
+</script>

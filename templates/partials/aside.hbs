@@ -9,11 +9,11 @@
   </div>
   <!-- end top -->
   <div class="sidebar">
-    <a href="#" class="dash active" data-partial="dash">
+    <a href="newdashboard.html" class="{{dashClass}}" data-partial="dash">
       <span class="material-symbols-sharp">grid_view</span>
       <h3>Dashboard</h3>
     </a>
-    <a href="#" class="manual" data-partial="manual">
+    <a href="manualscan" class="{{manualClass}}" data-partial="manualscan">
       <span class="material-symbols-sharp">person_outline</span>
       <h3>Manual Scan</h3>
     </a>
@@ -34,8 +34,8 @@
       <span class="material-symbols-sharp">report_gmailerrorred</span>
       <h3>Reports</h3>
     </a>
-    <a href="#" data-partial="settings">
-      <span class="material-symbols-sharp">settings</span>
+    <a href="setting" data-partial="settings">
+      <span class="material-symbols-sharp {{settingClass}}">settings</span>
       <h3>Settings</h3>
     </a>
     <a href="#" data-partial="addProduct">
@@ -51,28 +51,7 @@
 
 <script>
 
-  document.addEventListener('DOMContentLoaded', function() {
-  const links = document.querySelectorAll('.sidebar a[data-partial]');
-  const middleContainer = document.querySelector('.middle-container');
-
-  links.forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      const partialName = this.getAttribute('data-partial');
-
-      // Fetch the corresponding partial and update the middle section
-      fetch(`/partials/${partialName}`)
-        .then(response => response.text())
-        .then(html => {
-          middleContainer.innerHTML = html;
-          // Update active class
-          links.forEach(l => l.classList.remove('active'));
-          this.classList.add('active');
-        })
-        .catch(err => console.error('Failed to load partial:', err));
-    });
-  });
-});
+  
 
 
  function logout() {
@@ -80,5 +59,9 @@
          localStorage.removeItem("token");
         window.location.href = "/"; // Redirect to your login page
       }
+
+
+
+      
 
 </script>

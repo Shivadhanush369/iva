@@ -25,12 +25,18 @@ document.addEventListener('DOMContentLoaded', async (event) => {
             scopeSelect.appendChild(option);
         });
 
+
+       
+
+
+
     } catch (error) {
         console.error('Error fetching scopes:', error);
     }
 });
 
 function toggleCustomInput() {
+    alert("oi");
     const scopeSelect = document.getElementById('scope');
     fetchAndDisplayAlerts(scopeSelect.value);
     donutchart(scopeSelect.value);

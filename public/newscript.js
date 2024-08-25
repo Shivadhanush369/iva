@@ -62,7 +62,16 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 });
 
 function toggleCustomInput() {
+    const totalcweH3 = document.querySelector('.sales .middle .left h1');
+
+    totalcweH3.innerHTML=0;
     const scopeSelect = document.getElementById('scope');
+
+    const totalScansH3 = document.querySelector('.scans .middle .left h1');
+            totalScansH3.innerHTML = 0;
+
+            const totalScansH4 = document.querySelector('.alerts .middle .left h1');
+        totalScansH4.innerHTML=0;
     fetchTableData(scopeSelect.value);
     fetchAndDisplayAlerts(scopeSelect.value);
     donutchart(scopeSelect.value);
@@ -138,6 +147,7 @@ async function fetchTableData(Url) {
 
 
 async function donutchart(Url) {
+   
     
     try {
         const token = localStorage.getItem('jwtToken');
@@ -336,25 +346,5 @@ document.addEventListener('DOMContentLoaded', () => {
 /* new code  */
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    const sidebarLinks = document.querySelectorAll('.sidebar a');
-  
-    sidebarLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault(); // Prevent default link behavior
-        const page = e.currentTarget.getAttribute('data-page');
-  
-        // Fetch content based on clicked link
-        fetch(`/path/to/partial?name=${page}`)
-          .then(response => response.text())
-          .then(data => {
-            document.getElementById('middle-content').innerHTML = data;
-            
-            // Update the active state
-            sidebarLinks.forEach(item => item.classList.remove('active'));
-            e.currentTarget.classList.add('active');
-          });
-      });
-    });
-  });
+
   

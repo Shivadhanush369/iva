@@ -6,6 +6,7 @@ const ZAP_HOST = 'http://localhost:8080'; // Change this to your ZAP host
 const API_KEY = 'sf1l9d7pvavoh4qfbkkvrh14h3';
 const History = require('../models/History');
 const Report = require('../models/Report');
+const asidealerts = require('../models/asidealert');
 // Define the History model (adjust the schema according to your needs)
 
 
@@ -70,27 +71,118 @@ async function checkScanStatus(scanId) {
     }
 }
 
+
+
+// async function generateReportforManualScan(url, sockets,scanid) {
+//     try {
+//         const parsedUrl = new URL(url);
+//     // Extract the hostname
+//     const domain = parsedUrl.hostname;
+    
+//         const response = await axios.get(`${ZAP_HOST}/OTHER/core/other/jsonreport/`, {
+//             params: {
+//                 apikey: API_KEY
+//             }
+            
+//         });
+//         const report1 = JSON.stringify(response.data, null, 2);
+
+//         // Write the report to a file
+//         fs.writeFileSync(domain+'.json', report1);
+
+//         const report = response.data;
+//         report.scanId = scanid;
+//         report.url  = Url;
+//         console.log("Report generated");
+        
+//        // save report in mongodb
+//       const reportDB = new Report({report});
+//       await reportDB.save();
+//      const vulnerabilities= await getAlertSummary(parsedUrl,API_KEY);
+
+
+//         // Save history of report to MongoDB
+//         const url = Url.url;
+//         const username = Url.username;
+//         const vulnerability = vulnerabilities.alertsSummary;
+//         const detailes = await getAlertsByRisk(3,url);
+    
+//      const filteredAlerts = await categorizeAlertsByRisk(detailes);
+
+
+//      const history = new History({ username,url, date: new Date() ,vulnerability,filteredAlerts,scanid});
+//         await history.save();
+//    const medium = filteredAlerts.medium.length; 
+//    const high = filteredAlerts.high.length; 
+//    const low = filteredAlerts.low.length;
+//    console.log("into diff table");
+//      const alerts = new asidealerts({username,url,scanid,medium,high,low});
+//         await alerts.save();
+
+//         console.log('JSON Report generated and saved to MongoDB');
+//         // Emit the generated JSON event to clients
+//         sockets.forEach(socket => socket.emit('generatedjson', { url: url }));
+
+    
+
+//         console.log('JSON Report generated and saved to MongoDB');
+//     } catch (error) {
+//         throw new Error(`Failed to generate JSON report: ${error.message}`);
+//     }
+// }
+
 async function generateReport(Url,scanid) {
     try {
-        console.log(Url);
+        console.log("inside generate report url "+ JSON.stringify(Url));
         const parsedUrl = new URL(Url.url);
-        const domain = parsedUrl.hostname;
+        
 
+        console.log(JSON.stringify("inside generate report parsed url"+parsedUrl));
+        
+        const domain = parsedUrl.hostname;
+console.log("inside generate report domain"+ domain);
         const response = await axios.get(`${ZAP_HOST}/OTHER/core/other/jsonreport/`, {
             params: {
                 apikey: API_KEY,
                 scanId: scanid
             }
         });
-        const report1 = JSON.stringify(response.data);
+        //in zap you if you are scanning multiple sites at single time, when requested for report sends combined report of all so
+         let combinedReport = response.data;
+           let site =[];
+           console.log("length "+combinedReport.site.length);
+         for (let i = 0; i < combinedReport.site.length; i++) {
+            console.log(domain);
+
+            const sites = combinedReport.site[i];
+            console.log(JSON.stringify("normal sites host "+sites["@host"]));
+          
+            if (sites["@host"] === domain)
+            {
+                console.log("yes");
+               
+              site.push(sites);
+            }
+            else{
+                console.log("no");
+            }
+      
+          
+        }
+        let filteredreports = {
+            "site": site
+            };
+
+        const report1 = JSON.stringify(filteredreports);
 
         // Write the report to a file
         fs.writeFileSync(`${domain}.json`, report1);
 
-        const report = response.data;
+        const report = filteredreports;
         report.scanId = scanid;
         report.url  = Url;
         console.log("Report generated");
+        
        // save report in mongodb
       const reportDB = new Report({report});
       await reportDB.save();
@@ -100,15 +192,20 @@ async function generateReport(Url,scanid) {
         // Save history of report to MongoDB
         const url = Url.url;
         const username = Url.username;
-      const vulnerability = vulnerabilities.alertsSummary;
-      const detailes = await getAlertsByRisk(3,url);
+        const vulnerability = vulnerabilities.alertsSummary;
+        const detailes = await getAlertsByRisk(3,url);
     
-      const filteredAlerts = await categorizeAlertsByRisk(detailes);
+     const filteredAlerts = await categorizeAlertsByRisk(detailes);
 
 
      const history = new History({ username,url, date: new Date() ,vulnerability,filteredAlerts,scanid});
         await history.save();
-        
+   const medium = filteredAlerts.medium.length; 
+   const high = filteredAlerts.high.length; 
+   const low = filteredAlerts.low.length;
+   console.log("into diff table");
+     const alerts = new asidealerts({username,url,scanid,medium,high,low});
+        await alerts.save();
 
         console.log('JSON Report generated and saved to MongoDB');
     } catch (error) {
@@ -176,6 +273,7 @@ async function getAlertSummary(baseUrl, apiKey) {
     }
   }
   const getAlertsByRisk = async (risk,url) => {
+    console.log("getsalerts",JSON.stringify(url));
     try {
         const response = await axios.get(`${ZAP_HOST}/JSON/core/view/alerts`, {
             params: {
@@ -226,4 +324,16 @@ const categorizeAlertsByRisk = (alerts) => {
 
     return categorizedAlerts;
 };
-module.exports = { start };
+
+module.exports = {
+    spiderUrl,
+    checkSpiderStatus,
+    startScan,
+    checkScanStatus,
+    generateReport,
+    
+    start,
+    getAlertSummary,
+    getAlertsByRisk,
+    categorizeAlertsByRisk
+};

@@ -2,10 +2,14 @@ const e = require("express");
 const fs = require('fs');
 require('./scheduler1');
 const express = require("express");
+const socketIo = require('socket.io');
+const http = require('http');
+const scan = require("./commons/scan");
 const path = require("path");
 const hbs = require("hbs");
 const jwt = require("jsonwebtoken");
 const verifyToken = require('./authVerify'); // Import the JWT middleware
+const returnUsername = require('./jwtextract'); 
 const app = express();
 const mongoose = require('mongoose');
 const connectDB = require('./db/db');
@@ -19,14 +23,17 @@ const subscribe = require('./models/subscribe');
 const secretKey = "secretKey";
 const NodeCache = require('node-cache');
 const { URLSearchParams } = require("url");
+const asidealert =  require('./models/asidealert');
+const { decode } = require("punycode");
 // Middleware to parse JSON bodies
-
+const server = http.createServer(app);
+const io = socketIo(server);
 const cache = new NodeCache({ stdTTL: 300, checkperiod: 60 }); // Cache for 5 minutes
 
 
 const partials_path = path.join(__dirname, "../templates/partials");
  
-
+let sockets = [];
 console.log();
 app.use(express.json());
 connectDB();
@@ -109,12 +116,48 @@ app.post("/history",verifyToken,async (req,res)=>{
         const histories = await History.find({ username: name, url: url }).select('-_id');
 
         res.json(histories);
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to fetch data' });
     }
 
 });
+app.post("/analytics", verifyToken,async (req,res)=>{
+    const { name } = req.authData;  // Assuming `authData` contains user information from JWT payload
+    const { url } = req.body;
+    const date =[];
+    const medium = [];
+    const high =[];
+    const low =[];
+    console.log(url);
+    try {
+        // Fetch history data filtered by username "shiva"
+        const histories = await History.find({ username: name, url: url }).select('-_id');
+        
+        histories.forEach(history => {
+            date.push(history.date);
+            medium.push(history.vulnerability.Medium);
+            high.push(history.vulnerability.High);
+            low.push(history.vulnerability.Low);
+        });
+        const response = {
+            dates: date,
+            mediumVulnerabilities: medium,
+            highVulnerabilities: high,
+            lowVulnerabilities: low
+          };
+          res.json(response);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch data' });
+    }
+})
+
+
+
+
+
 
 app.get('/scopes', verifyToken, async (req, res) => {
     const { name } = req.authData;
@@ -347,13 +390,22 @@ setInterval(() => {
     console.log('Clearing cache');
     cache.flushAll();
 }, 300000);
-
-app.listen(5002, () => {
-    console.log("App is running on port 5000");
+server.listen(5002, () => {
+    console.log(`Server is running on port `);
 });
+
+// app.listen(5002, () => {
+//     console.log("App is running on port 5000");
+// });
 
 app.get("/manual", (req, res) => {
     res.render("manual");
+});
+app.get("/manualscan", (req, res) => {
+    res.render("manualscan");
+});
+app.get("/setting", (req, res) => {
+    res.render("setting");
 });
 
 app.get('/partials/:name', (req, res) => {
@@ -364,4 +416,93 @@ app.get('/partials/:name', (req, res) => {
   
 //new code
 
-  
+app.post('/alerts',  verifyToken,async (req, res) => {
+    const { name } = req.authData;  
+   
+    let url =req.body.url;
+    try {
+        const alerts = await asidealert.find({ 'username': name })
+    .sort({ _id: -1 }) // Sort by _id in descending order (latest first)
+    .limit(3); // Limit the result to the latest three entries
+console.log(JSON.stringify(alerts));
+        res.json(alerts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch reports' });
+    }
+});
+
+  // for manual scan 
+
+  io.on('connection', (socket) => {
+    console.log('New client connected');
+    sockets.push(socket);
+
+    socket.on('startScan', (targetUrl,token) => {
+        main(targetUrl,token);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+        sockets = sockets.filter(s => s !== socket);
+    });
+});
+
+  async function main(targetUrl,token) {
+
+    console.log("token "+token);
+let username;
+  returnUsername(token)
+    .then(decoded => {
+        // Store the decoded result in a variable
+        username = decoded.name; // Adjust based on your token payload
+      
+    })
+    .catch(error => {
+        console.error('Error:', error.message);
+    });
+    // Extract username from the decoded token
+   // Adjust this according to the structure of your token
+
+    try {
+        console.log("main");
+        const log = (message) => {
+            sockets.forEach(socket => socket.emit('log', message));
+        };
+console.log(targetUrl);
+        log(`Starting spider for URL: ${targetUrl}`);
+       
+        const spiderScanId = await scan.spiderUrl(targetUrl);
+        log(`Spider started with ID: ${spiderScanId}`);
+
+        let spiderStatus = '0';
+        while (spiderStatus !== '100') {
+            console.log("s");
+            spiderStatus = await scan.checkSpiderStatus(spiderScanId);
+            
+            sockets.forEach(socket => socket.emit('spiderStatus', { url: targetUrl, status: spiderStatus }));
+            await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before checking again
+        }
+
+        log('Spider completed. Starting active scan...');
+        const scanId = await scan.startScan(targetUrl);
+        log(`Scan started with ID: ${scanId}`);
+
+        let scanStatus = '0';
+        while (scanStatus !== '100') {
+            scanStatus = await scan.checkScanStatus(scanId);
+            console.log("ss")
+            sockets.forEach(socket => socket.emit('scanStatus', { url: targetUrl, status: scanStatus }));
+            await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before checking again
+        }
+        sockets.forEach(socket => socket.emit('scanComplete', { url: targetUrl }));
+
+        // Emit scanComplete event after all steps are completed
+        console.log('Scan completed. Generating report...');
+        console.log("username "+username);
+        await scan.generateReportforManualScan(targetUrl, sockets,scanId,username);
+
+    } catch (error) {
+        sockets.forEach(socket => socket.emit('error', { url: targetUrl, message: error.message }));
+    }
+}
