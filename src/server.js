@@ -348,41 +348,73 @@ app.post('/scanned', verifyToken, async (req, res) => {
 });
 
 
-app.post('/alertCount', async (req, res) => {
-    const { url } = req.body;
-    try {
-        const reportData = await Report.find({ 'report.url.url': url });
-        if (!reportData || reportData.length === 0) {
-            return res.status(404).json({ error: 'No reports found for this URL' });
-        }
-        let alertCount = 0;
-        reportData.forEach(report => {
-            if (report.report && Array.isArray(report.report.site)) {
-                report.report.site.forEach(site => {
-                    if (Array.isArray(site.alerts)) {
-                       site.alerts.forEach(instance =>{
-                         let riskdesc =instance.riskdesc;
-                         
-                         if(riskdesc.includes("Informational"))
-                         {
+app.post('/alertCount', verifyToken,async (req, res) => {
 
-                         }
-                     else
-                        {
-                            
-                            alertCount += instance.instances.length;
-                        }
-                       });
-                        
-                    }
-                });
-            }
+    const { name } = req.authData;  // Assuming `authData` contains user information from JWT payload
+    const { url } = req.body;
+    const date =[];
+    const medium = [];
+    const high =[];
+    const low =[];
+    let alertCount=0;
+    console.log(url);
+    try {
+        // Fetch history data filtered by username "shiva"
+        const histories = await History.find({ username: name, url: url }).select('-_id');
+        
+        histories.forEach(history => {
+           
+            alertCount = alertCount +history.vulnerability.Medium + history.vulnerability.High + history.vulnerability.Low;
+            
+            
         });
-        res.json({ alertCount });
+       
+          res.json({alertCount});
     } catch (error) {
-        console.error('Error counting alerts:', error);
-        res.status(500).json({ error: 'Failed to count alerts' });
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch data' });
     }
+
+
+
+
+
+
+
+    // const { url } = req.body;
+    // try {
+    //     const reportData = await Report.find({ 'report.url.url': url });
+    //     if (!reportData || reportData.length === 0) {
+    //         return res.status(404).json({ error: 'No reports found for this URL' });
+    //     }
+    //     let alertCount = 0;
+    //     reportData.forEach(report => {
+    //         if (report.report && Array.isArray(report.report.site)) {
+    //             report.report.site.forEach(site => {
+    //                 if (Array.isArray(site.alerts)) {
+    //                    site.alerts.forEach(instance =>{
+    //                      let riskdesc =instance.riskdesc;
+                         
+    //                      if(riskdesc.includes("Informational"))
+    //                      {
+
+    //                      }
+    //                  else
+    //                     {
+                            
+    //                         alertCount += instance.instances.length;
+    //                     }
+    //                    });
+                        
+    //                 }
+    //             });
+    //         }
+    //     });
+    //     res.json({ alertCount });
+    // } catch (error) {
+    //     console.error('Error counting alerts:', error);
+    //     res.status(500).json({ error: 'Failed to count alerts' });
+    // }
 });
 
 
@@ -406,6 +438,10 @@ app.get("/manualscan", (req, res) => {
 });
 app.get("/setting", (req, res) => {
     res.render("setting");
+});
+
+app.get("/analytic", (req, res) => {
+    res.render("analytics");
 });
 
 app.get('/partials/:name', (req, res) => {

@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
 
 async function toggleanalytics() {
+    alert("hi");
     const scopeSelect = document.getElementById('analyticscope');
     const url = scopeSelect.value;
 
