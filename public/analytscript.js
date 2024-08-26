@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
 
 async function toggleanalytics() {
-    alert("hi");
+   
     const scopeSelect = document.getElementById('analyticscope');
     const url = scopeSelect.value;
 
@@ -66,7 +66,16 @@ async function toggleanalytics() {
             // Update Highcharts
             Highcharts.chart('chart-container', {
                 chart: {
-                    type: 'spline' // Change to spline chart
+                    type: 'spline' ,// Change to spline chart
+                    width: 600, // Adjust the width
+                    height: 400,
+                    events: {
+                        load: function () {
+                            // Apply border styling after the chart is rendered
+                            document.getElementById('chart-container').style.border = '2px solid grey';
+                        }
+                    }
+                
                 },
                 title: {
                     text: 'Risk Level Counts Over Time',
@@ -75,7 +84,7 @@ async function toggleanalytics() {
                 xAxis: {
                     categories: dates, // Use dynamic dates
                     title: {
-                        text: 'Year'
+                        text: 'Time'
                     }
                 },
                 yAxis: {
@@ -133,7 +142,10 @@ async function toggleanalytics() {
                     name: 'Low Risk',
                     data: lowVulnerabilities,  // Use dynamic data
                     color: 'green'     // Color for Low Risk
-                }]
+                }],
+                credits: {
+                    enabled: false // Disable the highcharts.com watermark
+                }
             });
         } else {
             console.error('Error response from server:', response.statusText);
