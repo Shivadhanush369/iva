@@ -6,6 +6,7 @@
     box-sizing: border-box;
 }
 
+  
 :root {
     --linear-grad: linear-gradient(to right, #141E30, #243B55);
     --grad-clr1: #141E30;
@@ -106,6 +107,10 @@ body {
 
 .container.right-panel-active .overlay {
     transform: translateX(50%);
+}
+
+header{
+    text-align: center;
 }
 
 .overlay-panel {
