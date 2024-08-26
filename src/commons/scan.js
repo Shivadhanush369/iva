@@ -8,13 +8,7 @@ const History = require('../models/History');
 const Report = require('../models/Report');
 const asidealerts = require('../models/asidealert');
 // Define the History model (adjust the schema according to your needs)
-
-
 async function spiderUrl(url) {
-   
-   
-   
-    
     try {
         const response = await axios.get(`${ZAP_HOST}/JSON/spider/action/scan/`, {
             params: {
@@ -27,7 +21,6 @@ async function spiderUrl(url) {
         throw new Error(`Failed to start spider: ${error.message}`);
     }
 }
-
 async function checkSpiderStatus(scanId) {
     try {
         const response = await axios.get(`${ZAP_HOST}/JSON/spider/view/status/`, {
@@ -41,7 +34,6 @@ async function checkSpiderStatus(scanId) {
         throw new Error(`Failed to check spider status: ${error.message}`);
     }
 }
-
 async function startScan(url,cvssScore) {
     try {
         const response = await axios.get(`${ZAP_HOST}/JSON/ascan/action/scan/`, {
@@ -56,7 +48,6 @@ async function startScan(url,cvssScore) {
         throw new Error(`Failed to start scan: ${error.message}`);
     }
 }
-
 async function checkScanStatus(scanId) {
     try {
         const response = await axios.get(`${ZAP_HOST}/JSON/ascan/view/status/`, {
@@ -70,77 +61,76 @@ async function checkScanStatus(scanId) {
         throw new Error(`Failed to check scan status: ${error.message}`);
     }
 }
-
-
-
-// async function generateReportforManualScan(url, sockets,scanid) {
-//     try {
-//         const parsedUrl = new URL(url);
-//     // Extract the hostname
-//     const domain = parsedUrl.hostname;
-    
-//         const response = await axios.get(`${ZAP_HOST}/OTHER/core/other/jsonreport/`, {
-//             params: {
-//                 apikey: API_KEY
-//             }
-            
-//         });
-//         const report1 = JSON.stringify(response.data, null, 2);
-
-//         // Write the report to a file
-//         fs.writeFileSync(domain+'.json', report1);
-
-//         const report = response.data;
-//         report.scanId = scanid;
-//         report.url  = Url;
-//         console.log("Report generated");
-        
-//        // save report in mongodb
-//       const reportDB = new Report({report});
-//       await reportDB.save();
-//      const vulnerabilities= await getAlertSummary(parsedUrl,API_KEY);
-
-
-//         // Save history of report to MongoDB
-//         const url = Url.url;
-//         const username = Url.username;
-//         const vulnerability = vulnerabilities.alertsSummary;
-//         const detailes = await getAlertsByRisk(3,url);
-    
-//      const filteredAlerts = await categorizeAlertsByRisk(detailes);
-
-
-//      const history = new History({ username,url, date: new Date() ,vulnerability,filteredAlerts,scanid});
-//         await history.save();
-//    const medium = filteredAlerts.medium.length; 
-//    const high = filteredAlerts.high.length; 
-//    const low = filteredAlerts.low.length;
-//    console.log("into diff table");
-//      const alerts = new asidealerts({username,url,scanid,medium,high,low});
-//         await alerts.save();
-
-//         console.log('JSON Report generated and saved to MongoDB');
-//         // Emit the generated JSON event to clients
-//         sockets.forEach(socket => socket.emit('generatedjson', { url: url }));
-
-    
-
-//         console.log('JSON Report generated and saved to MongoDB');
-//     } catch (error) {
-//         throw new Error(`Failed to generate JSON report: ${error.message}`);
-//     }
-// }
-
+async function generateReportforManualScan(url, sockets,scanid,username) {
+    try {
+        const parsedUrl = new URL(url);
+    // Extract the hostname
+    const domain = parsedUrl.hostname;
+        const response = await axios.get(`${ZAP_HOST}/OTHER/core/other/jsonreport/`, {
+            params: {
+                apikey: API_KEY
+            }
+        });
+           //in zap you if you are scanning multiple sites at single time, when requested for report sends combined report of all so
+           let combinedReport = response.data;
+           let site =[];
+           console.log("length "+combinedReport.site.length);
+         for (let i = 0; i < combinedReport.site.length; i++) {
+            console.log(domain);
+            const sites = combinedReport.site[i];
+            console.log(JSON.stringify("normal sites host "+sites["@host"]));
+            if (sites["@host"] === domain)
+            {
+                console.log("yes");
+              site.push(sites);
+            }
+            else{
+                console.log("no");
+            }
+        }
+        let filteredreports = {
+            "site": site
+            };
+        const report1 = JSON.stringify(filteredreports);
+        // Write the report to a file
+        fs.writeFileSync(`${domain}.json`, report1);
+        const detailurl = {
+            "url": url,
+            "username":username
+        };
+        const report = filteredreports;
+        report.scanId = scanid;
+        report.url  = detailurl;
+        console.log("Report generated");
+       // save report in mongodb
+      const reportDB = new Report({report});
+      await reportDB.save();
+      const vulnerabilities= await getAlertSummary(parsedUrl,API_KEY);
+        // Save history of report to MongoDB
+        const vulnerability = vulnerabilities.alertsSummary;
+        const detailes = await getAlertsByRisk(3,url);
+        const filteredAlerts = await categorizeAlertsByRisk(detailes);
+     const history = new History({ username,url, date: new Date() ,vulnerability,filteredAlerts,scanid});
+        await history.save();
+   const medium = filteredAlerts.medium.length;
+   const high = filteredAlerts.high.length;
+   const low = filteredAlerts.low.length;
+   console.log("into diff table");
+     const alerts = new asidealerts({username,url,scanid,medium,high,low});
+        await alerts.save();
+        sockets.forEach(socket => socket.emit('generatedjson', { url: url }));
+        console.log('JSON Report generated and saved to MongoDB');
+    } catch (error) {
+        throw new Error(`Failed to generate JSON report: ${error}`);
+    }
+}
 async function generateReport(Url,scanid) {
     try {
         console.log("inside generate report url "+ JSON.stringify(Url));
         const parsedUrl = new URL(Url.url);
-        
-
         console.log(JSON.stringify("inside generate report parsed url"+parsedUrl));
-        
         const domain = parsedUrl.hostname;
-console.log("inside generate report domain"+ domain);
+        console.log("inside generate report domain"+ domain);
         const response = await axios.get(`${ZAP_HOST}/OTHER/core/other/jsonreport/`, {
             params: {
                 apikey: API_KEY,
@@ -153,107 +143,77 @@ console.log("inside generate report domain"+ domain);
            console.log("length "+combinedReport.site.length);
          for (let i = 0; i < combinedReport.site.length; i++) {
             console.log(domain);
-
             const sites = combinedReport.site[i];
             console.log(JSON.stringify("normal sites host "+sites["@host"]));
-          
             if (sites["@host"] === domain)
             {
                 console.log("yes");
-               
               site.push(sites);
             }
             else{
                 console.log("no");
             }
-      
-          
         }
         let filteredreports = {
             "site": site
             };
-
         const report1 = JSON.stringify(filteredreports);
-
         // Write the report to a file
         fs.writeFileSync(`${domain}.json`, report1);
-
         const report = filteredreports;
         report.scanId = scanid;
         report.url  = Url;
         console.log("Report generated");
-        
        // save report in mongodb
       const reportDB = new Report({report});
       await reportDB.save();
      const vulnerabilities= await getAlertSummary(parsedUrl,API_KEY);
-
-    
         // Save history of report to MongoDB
         const url = Url.url;
         const username = Url.username;
         const vulnerability = vulnerabilities.alertsSummary;
         const detailes = await getAlertsByRisk(3,url);
-    
      const filteredAlerts = await categorizeAlertsByRisk(detailes);
-
-
      const history = new History({ username,url, date: new Date() ,vulnerability,filteredAlerts,scanid});
         await history.save();
-   const medium = filteredAlerts.medium.length; 
-   const high = filteredAlerts.high.length; 
+   const medium = filteredAlerts.medium.length;
+   const high = filteredAlerts.high.length;
    const low = filteredAlerts.low.length;
    console.log("into diff table");
      const alerts = new asidealerts({username,url,scanid,medium,high,low});
         await alerts.save();
-
         console.log('JSON Report generated and saved to MongoDB');
     } catch (error) {
         throw new Error(`Failed to generate JSON report: ${error}`);
     }
 }
-
 async function start(targetUrl) {
     try {
         console.log(`Starting spider for URL: ${targetUrl.url}`);
         const spiderScanId = await spiderUrl(targetUrl.url);
         console.log(`Spider started with ID: ${spiderScanId}`);
-
         let spiderStatus = '0';
         while (spiderStatus !== '100') {
             console.log("s");
             spiderStatus = await checkSpiderStatus(spiderScanId);
             await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before checking again
         }
-
         console.log('Spider completed. Starting active scan...');
         const scanId = await startScan(targetUrl.url,targetUrl.cvssScore);
         console.log(`Scan started with ID: ${scanId}`);
-
         let scanStatus = '0';
         while (scanStatus !== '100') {
             scanStatus = await checkScanStatus(scanId);
             console.log("ss");
             await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before checking again
         }
-
         console.log('Scan completed. Generating report...');
         await generateReport(targetUrl,scanId);
-
     } catch (error) {
         console.error(error.message);
     }
 }
-
-
-
-
-
-
 async function getAlertSummary(baseUrl, apiKey) {
-
-    
-   
     try {
       const response = await axios.get(`http://localhost:8080/JSON/alert/view/alertsSummary/`, {
         headers: {
@@ -264,7 +224,6 @@ async function getAlertSummary(baseUrl, apiKey) {
           baseurl: baseUrl // Optionally filter by base URL
         }
       });
-  
       const alertSummary = response.data;
       console.log("down "+JSON.stringify(alertSummary));
       return alertSummary;
@@ -290,19 +249,13 @@ async function getAlertSummary(baseUrl, apiKey) {
         throw error;
     }
 };
-
 const categorizeAlertsByRisk = (alerts) => {
-
-
-
     const categorizedAlerts = {
         high: [],
         medium: [],
         low: [],
         informational: []
     };
-
-
     alerts.forEach(alert => {
         switch (alert.risk) {
             case 'High': // High
@@ -321,19 +274,18 @@ const categorizeAlertsByRisk = (alerts) => {
                 console.warn(`Unknown risk level: ${alert.risk}`);
         }
     });
-
     return categorizedAlerts;
 };
-
 module.exports = {
     spiderUrl,
     checkSpiderStatus,
+    generateReportforManualScan,
     startScan,
     checkScanStatus,
     generateReport,
-    
     start,
     getAlertSummary,
     getAlertsByRisk,
     categorizeAlertsByRisk
 };
+
