@@ -4,7 +4,7 @@
 
 h1 {
     text-align: center;
-    color: #333;
+    color: var(--clr-dark);
     margin-top: 5%;
     margin-left: -42%;
 }
@@ -45,7 +45,7 @@ h1 {
   #chart-container{
 
     width: 100%; 
-    max-width: 600px; 
+    max-width: 800px; 
     height: 400px; 
     margin: 160px auto; 
     margin-top: 5%; 

@@ -136,7 +136,8 @@ app.post("/analytics", verifyToken,async (req,res)=>{
         const histories = await History.find({ username: name, url: url }).select('-_id');
         
         histories.forEach(history => {
-            date.push(history.date);
+        
+                    date.push(history.date);
             medium.push(history.vulnerability.Medium);
             high.push(history.vulnerability.High);
             low.push(history.vulnerability.Low);

@@ -67,7 +67,7 @@ async function toggleanalytics() {
             Highcharts.chart('chart-container', {
                 chart: {
                     type: 'spline' ,// Change to spline chart
-                    width: 600, // Adjust the width
+                    width: 800, // Adjust the width
                     height: 400,
                     events: {
                         load: function () {
@@ -157,3 +157,5 @@ async function toggleanalytics() {
 
 // Attach event listener to a button or similar trigger
 document.getElementById('fetchDataBtn').addEventListener('click', toggleanalytics);
+
+

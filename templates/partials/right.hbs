@@ -155,4 +155,18 @@ setInterval(makeApiCall, 300000);
 // Initial call to start immediately
 makeApiCall();
 
+
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('jwtToken');
+    const username = localStorage.getItem('username');
+    
+    if (!token || !username) {
+        window.location.href = '/'; // Redirect to your login page
+    }
+    else{
+        const profile = document.querySelector('.profile .info p');
+        profile.innerHTML =username;
+    }
+});
+
 </script>
