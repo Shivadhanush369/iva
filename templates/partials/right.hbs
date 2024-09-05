@@ -110,7 +110,7 @@ const updateContainer = document.querySelector('.updates');
 // Function to make the API call
 const makeApiCall = async () => {
     const token = localStorage.getItem('jwtToken');
-    const response = await fetch('/alerts', {
+    const response = await fetch('/newasidealerts', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ const updateUpdates = (alerts) => {
                 <img src="https://media.istockphoto.com/id/517998264/vector/male-user-icon.webp?s=1024x1024&w=is&k=20&c=i2eQlg8dK8RgTguGTyLmuCQ9IPBIlW-MXwDBMIPggVs=" alt=""/>
             </div>
             <div class="message">
-                <p><b>${alert.username}</b> Received <span style="color:red"> ${alert.high} high</span>, <span style="color: #DAA520;">${alert.medium} medium</span>,<span style="color: green">${alert.low} low </span>alerts on ${alert.url}</p>
+                <p><b>${alert.username}</b> Received <span style="color:red"> ${alert.High} high</span>, <span style="color: #DAA520;">${alert.Medium} medium</span>,<span style="color: green">${alert.Low} low </span>alerts on ${alert.url}</p>
             </div>
         `;
 

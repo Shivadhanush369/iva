@@ -361,6 +361,7 @@ app.post('/alertCount', verifyToken,async (req, res) => {
     console.log(url);
     try {
         // Fetch history data filtered by username "shiva"
+        
         const histories = await History.find({ username: name, url: url }).select('-_id');
         
         histories.forEach(history => {
@@ -543,3 +544,289 @@ console.log(targetUrl);
         sockets.forEach(socket => socket.emit('error', { url: targetUrl, message: error.message }));
     }
 }
+
+
+app.post('/newAnalytics',  verifyToken,async (req, res) => {
+    const { name } = req.authData;  
+   
+   console.log(name);
+    const { url } = req.body;
+    let totalCweid = new Set();
+    let alertsi =  0;
+   
+    try {
+        const reports = await Report.find({ 'report.url.username': name,'report.url.url':url}).select('-_id');
+    console.log(reports.length);
+    console.log("jhj");
+    
+    let date =[];
+    let mediumVulnerabilities =[];
+    let highVulnerabilities =[];
+    let lowVulnerabilities  = [];
+
+
+    let table =[];
+    reports.forEach(report => {
+        let high = 0;
+    let medium = 0;
+    let low =0;
+   
+    let scanid=0;
+        // Check if report.site exists and is an array
+        if (report.report && report.report.site && Array.isArray(report.report.site)) {
+            scanid = report.report.scanId;
+          report.report.site.forEach(site => {
+            // Check if site.alerts exists and is an array
+            if (site.alerts && Array.isArray(site.alerts)) {
+              site.alerts.forEach(alert => {
+                if((alert.riskdesc).startsWith("Medium")){
+                    medium = medium+ (alert.instances).length;
+                    
+                }
+                else if((alert.riskdesc).startsWith("High")){
+                    high = high+ (alert.instances).length;
+                 
+                }
+                else if((alert.riskdesc).startsWith("Low")){
+                    low = low+ (alert.instances).length;
+                    
+                }
+
+                if((alert.riskdesc).includes("Informational")){
+
+                }else{
+                alertsi = alertsi+(alert.instances).length;
+                }
+                totalCweid.add(alert.cweid); // Add unique CWEID to the Set
+              });
+            }
+          });
+        }
+        mediumVulnerabilities.push(medium);
+        highVulnerabilities.push(high);
+        lowVulnerabilities.push(low);
+        
+      });
+      const response = {
+        "date":date,
+        "lowVulnerabilities":lowVulnerabilities,
+        "highVulnerabilities":highVulnerabilities,
+        "mediumVulnerabilities":mediumVulnerabilities
+      }
+      res.json(response);
+    
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch reports' });
+    }
+});
+
+
+app.post('/newcards',  verifyToken,async (req, res) => {
+    const { name } = req.authData;  
+   
+   console.log(name);
+    const { url } = req.body;
+    let totalCweid = new Set();
+    let alertsi =  0;
+   
+    try {
+        const reports = await Report.find({ 'report.url.username': name,'report.url.url':url}).select('-_id');
+    console.log(reports.length);
+    console.log("jhj");
+    let totalScan = reports.length;
+    // reports.forEach(report => {
+    //     if((report.site).isArray)
+    //     {
+    //         console.log("array");
+    //     }
+    //     report.site.forEach(sites=>{
+    //        sites.alerts.forEach(alert=>{
+           
+    //             totalCweid.add(alert.cweid);
+    //         });
+    //     });
+       
+    // }
+    //     );
+    
+    let table =[];
+    reports.forEach(report => {
+        let high = 0;
+    let medium = 0;
+    let low =0;
+    let highAlerts=[];
+    let mediumAlerts=[];
+    let lowAlerts=[];
+    let scanid=0;
+        // Check if report.site exists and is an array
+        if (report.report && report.report.site && Array.isArray(report.report.site)) {
+            scanid = report.report.scanId;
+          report.report.site.forEach(site => {
+            // Check if site.alerts exists and is an array
+            if (site.alerts && Array.isArray(site.alerts)) {
+              site.alerts.forEach(alert => {
+                if((alert.riskdesc).startsWith("Medium")){
+                    medium = medium+ (alert.instances).length;
+                    mediumAlerts.push(alert);
+                }
+                else if((alert.riskdesc).startsWith("High")){
+                    high = high+ (alert.instances).length;
+                    highAlerts.push(alert);
+                }
+                else if((alert.riskdesc).startsWith("Low")){
+                    low = low+ (alert.instances).length;
+                    lowAlerts.push(alert);
+                }
+
+                if((alert.riskdesc).includes("Informational")){
+
+                }else{
+                alertsi = alertsi+(alert.instances).length;
+                }
+                totalCweid.add(alert.cweid); // Add unique CWEID to the Set
+              });
+            }
+          });
+        }
+
+        let vulnerability ={
+            "High":high,
+            "Medium":medium,
+            "Low":low
+  
+         };
+         let filteredAlerts={
+          "high":highAlerts,
+          "medium":mediumAlerts,
+          "low":lowAlerts
+         }
+  
+        const tablesdata ={
+          "username": name,
+          "scanid":scanid,
+          "url": url,
+          "date": "none",
+          "scan_profile": "fullscan",
+  
+          "vulnerability": vulnerability,
+          "filteredAlerts":filteredAlerts
+        };
+
+        table.push(tablesdata);
+      });
+     
+     
+ const totalscans = reports.length;
+        const response = {
+            "totalscan": totalscans,
+            "totalCweid":totalCweid.size,
+            "alertsi":alertsi
+        }
+
+        const data = {
+            "response": response,
+            "tables": table
+        }
+            console.log(reports.length);
+        res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch reports' });
+    }
+});
+
+app.post('/table',  verifyToken,async (req, res) => {
+    const { name } = req.authData;  
+   
+   console.log(name);
+    const { url } = req.body;
+   
+   
+    try {
+        const reports = await Report.find({ 'report.url.username': name,'report.url.url':url}).select('-_id');
+    console.log(reports.length);
+
+
+
+}catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch reports' });
+    }
+});
+
+
+app.post('/newasidealerts',  verifyToken,async (req, res) => {
+    const { name } = req.authData;  
+   
+   console.log(name);
+    const { url } = req.body;
+    let totalCweid = new Set();
+    let alertsi =  0;
+   
+    try {
+        const reports = await Report.find({ 'report.url.username': name })
+        .sort({ _id: -1 }) // Sort by the '_id' field in descending order to get the latest inserted documents
+        .limit(3)           // Limit the results to the last three documents
+        .select('-_id');    // Exclude the '_id' field from the results
+      
+          console.log(reports.length);
+    console.log("jhj");
+    let totalScan = reports.length;
+
+    let asidealerts =[];
+    reports.forEach(report => {
+        let high = 0;
+    let medium = 0;
+    let low =0;
+  let reportUrl=report.report.url.url;
+        // Check if report.site exists and is an array
+        if (report.report && report.report.site && Array.isArray(report.report.site)) {
+          report.report.site.forEach(site => {
+            // Check if site.alerts exists and is an array
+            if (site.alerts && Array.isArray(site.alerts)) {
+              site.alerts.forEach(alert => {
+                if((alert.riskdesc).startsWith("Medium")){
+                    medium = medium+ (alert.instances).length;
+                   
+                }
+                else if((alert.riskdesc).startsWith("High")){
+                    high = high+ (alert.instances).length;
+                   
+                }
+                else if((alert.riskdesc).startsWith("Low")){
+                    low = low+ (alert.instances).length;
+                    
+                }
+
+                if((alert.riskdesc).includes("Informational")){
+
+                }else{
+                alertsi = alertsi+(alert.instances).length;
+                }
+                totalCweid.add(alert.cweid); // Add unique CWEID to the Set
+              });
+            }
+          });
+        }
+
+        let vulnerability ={
+            "username": name,
+            "url":reportUrl,
+            "High":high,
+            "Medium":medium,
+            "Low":low
+  
+        }
+        asidealerts.push(vulnerability);
+      });
+     
+     
+
+            console.log(reports.length);
+        res.json(asidealerts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch reports' });
+    }
+});

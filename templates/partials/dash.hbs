@@ -250,48 +250,54 @@ function populateTable(scan) {
             }
         }
         fetchData(); */
-
 function handleBadgeClick(alertData) {
-
   const leftCard = document.querySelector('.card-left');
-    const rightCard = document.querySelector('.card-right');
-leftCard.innerHTML = '<div class="card-header">Issues</div>';
+  const rightCard = document.querySelector('.card-right');
+  const modal = document.getElementById('modal');
+  const body = document.querySelector('body');
 
-    // Create and append issue names to the left card
-    alertData.forEach((alert) => {
-        const alertElement = document.createElement('div');
-        alertElement.className = 'name';
-        alertElement.textContent = alert.name;
-        alertElement.addEventListener('click', () => displayDetails(alert));
-        leftCard.appendChild(alertElement);
-    });
+  // Clear and set up the left card header
+  leftCard.innerHTML = '<div class="card-header">Issues</div>';
 
-    // Function to display alert details on the right card
-    function displayDetails(selectedAlert) {
-        rightCard.innerHTML = `
-        <div class="details-section">
-            <h2>Issue Details</h2>
-            <p><strong>Url:</strong> ${selectedAlert.url}</p>
-            <p><strong>Alert Name:</strong> ${selectedAlert.name}</p>
-            <p><strong>Description:</strong> ${selectedAlert.description}</p>
-            <p><strong>Risk Description:</strong> ${selectedAlert.risk}</p>
-            <p><strong>Solution:</strong> ${selectedAlert.solution}</p>
-            <p><strong>CWE ID:</strong> ${selectedAlert.cweid}</p>
-            <p><strong>WASC ID:</strong> ${selectedAlert.wascid}</p>
+  // Create and append issue names to the left card
+  alertData.forEach((alerts) => {
+    let alertcount = (alerts.instances).length; // Get the count of instances
+    const alertElement = document.createElement('div');
+    alertElement.className = 'name';
+
+    // Set the inner HTML with the alert name and count
+alertElement.innerHTML = `${alerts.name} <span style="color:red">(${alertcount})</span>`;
+
+    // Attach click event to display details of the selected alert
+    alertElement.addEventListener('click', () => displayDetails(alerts));
+    leftCard.appendChild(alertElement);
+  });
+
+  // Function to display alert details on the right card
+  function displayDetails(selectedAlert) {
+    let urlListDivs = selectedAlert.instances.map(instance => `<div>${instance.uri}</div>`).join('');       // Set inner HTML of the right card with alert details
+    rightCard.innerHTML = `
+      <div class="details-section">
+        <h2>Issue Details</h2>
+ <div style="display: flex; align-items: flex-start;">
+                <strong style="min-width: 100px;color:#007BFF;">Urls:</strong>
+                <div>${urlListDivs}</div> <!-- Display URLs in a separate div aligned next to the label -->
             </div>
-        `;
-    }
-    const modal = document.getElementById('modal');
-   // const modalMessage = document.getElementById('modal-message');
-    const body = document.querySelector('body');
-    
-    // Apply blur effect to the body
-    body.classList.add('blur');
-    
-    // Show the modal with the corresponding risk level
-   // modalMessage.textContent = riskLevel;
-    modal.style.display = 'flex';
+        <p><strong>Alert Name:</strong> ${selectedAlert.name}</p>
+        <p><strong>Description:</strong> ${selectedAlert.desc}</p>
+        <p><strong>Risk Description:</strong> ${selectedAlert.riskdesc}</p>
+        <p><strong>Solution:</strong> ${selectedAlert.solution}</p>
+        <p><strong>CWE ID:</strong> ${selectedAlert.cweid}</p>
+        <p><strong>WASC ID:</strong> ${selectedAlert.wascid}</p>
+      </div>
+    `;
+  }
+
+  // Apply blur effect to the body and show the modal
+  body.classList.add('blur');
+  modal.style.display = 'flex';
 }
+
 
 function getRiskClass(risk) {
     switch (risk) {

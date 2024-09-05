@@ -74,31 +74,41 @@ function toggleCustomInput() {
         totalScansH4.innerHTML=0;
     fetchTableData(scopeSelect.value);
     fetchAndDisplayAlerts(scopeSelect.value);
-    donutchart(scopeSelect.value);
-    fetchAndUpdateChart(scopeSelect.value);
-    updateAlertCountForScope(scopeSelect.value);
+    // donutchart(scopeSelect.value);
+    // fetchAndUpdateChart(scopeSelect.value);
+    // updateAlertCountForScope(scopeSelect.value);
     
 }
 function populateTable(scan) {
+
+    const totalcweH3 = document.querySelector('.sales .middle .left h1');
+
+    totalcweH3.innerHTML=scan.response.totalCweid;
+
+    const totalScansH3 = document.querySelector('.scans .middle .left h1');
+    totalScansH3.innerHTML =scan.response.totalscan;
+
+    const totalScansH4 = document.querySelector('.alerts .middle .left h1');
+    totalScansH4.innerHTML=scan.response.alertsi;
    
-   
+   let tablesData = scan.tables;
     const tbody = document.querySelector('table tbody');
     tbody.innerHTML = ''; // Clear any existing rows
 
-    scan.forEach(scan => {
+    tablesData.forEach(tableData => {
         const row = document.createElement('tr');
         
         row.innerHTML = `
-        <td><input type="checkbox" value="${scan.scanid}"/></td>
-        <td>${scan.scanid}</td>
-            <td> <a href="${scan.url}">${scan.url}</a></td>
-            <td>${scan.username}</td>
-            <td>${scan.scan_profile}</td>
-            <td>${scan.date}</td>
+        <td><input type="checkbox" value="${tableData.scanid}"/></td>
+        <td>${tableData.scanid}</td>
+            <td> <a href="${tableData.url}">${tableData.url}</a></td>
+            <td>${tableData.username}</td>
+            <td>${tableData.scan_profile}</td>
+            <td>${tableData.date}</td>
             <td>
-                <span class="badge badge-danger" title="High">${scan.vulnerability.High}</span>
-                <span class="badge badge-warning" title="Medium">${scan.vulnerability.Medium}</span>
-                <span class="badge badge-secondary" title="Low">${scan.vulnerability.Low}</span>
+                <span class="badge badge-danger" title="High">${tableData.vulnerability.High}</span>
+                <span class="badge badge-warning" title="Medium">${tableData.vulnerability.Medium}</span>
+                <span class="badge badge-secondary" title="Low">${tableData.vulnerability.Low}</span>
                 
             </td>    
         `;
@@ -109,9 +119,9 @@ function populateTable(scan) {
     const mediumBadge = row.querySelector('.badge-warning');
     const lowBadge = row.querySelector('.badge-secondary');
 
-    highBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.high));
-    mediumBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.medium));
-    lowBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.low));
+    highBadge.addEventListener('click', () => handleBadgeClick(tableData.filteredAlerts.high));
+    mediumBadge.addEventListener('click', () => handleBadgeClick(tableData.filteredAlerts.medium));
+    lowBadge.addEventListener('click', () => handleBadgeClick(tableData.filteredAlerts.low));
     });
 
 }
@@ -125,7 +135,7 @@ async function fetchTableData(Url) {
         };
 
         // Set up fetch request with headers
-        const response = await fetch('/history', {
+        const response = await fetch('/newcards', {
             method: 'POST', // specify the HTTP method
             headers: {
                 'Authorization': `Bearer ${token}`, // include the retrieved token in the Authorization header
