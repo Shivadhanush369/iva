@@ -1,3 +1,5 @@
+
+let chatmessage;
 document.addEventListener('DOMContentLoaded', () => {
     const chatbotToggler = document.querySelector(".chatbot-toggler");
     const closeBtn = document.querySelector(".close-btn");
@@ -26,42 +28,55 @@ document.addEventListener('DOMContentLoaded', () => {
   
     const generateResponse = (incomingChatli) => {
       // Generate a random response from the bot
-      const API_URL = "https://api.openai.com/v1/chat/completions";
+      const API_URL = "http://127.0.0.1:8000/fetch_records";
       const messageElement = incomingChatli.querySelector("p");
-  
+    
+      // Ensure userMessage is defined
+      const userMessage = chatmessage; // or however you retrieve the user's message
+    
+      let bodydata = {
+        text: userMessage
+      };
+    
       const requestOptions = {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_KEY}`,
+          "Content-Type": "application/json",  // Ensure the content is JSON
         },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            {
-              role: "user",
-              content: userMessage,
-            },
-          ],
-        }),
+        body: JSON.stringify(bodydata),  // Stringify the bodydata
       };
-  
+    
       // Send POST request to API, get a response and set the response as paragraph text
       fetch(API_URL, requestOptions)
-        .then((res) => res.json())
-        .then((data) => {
-          messageElement.textContent = data.choices[0].message.content.trim();
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
         })
-        .catch(() => {
+        .then((data) => {
+          if (data.response && data.response.content) {
+            const responseContent = data.response.content.trim();
+            const prettyContent = prettifyResponse(responseContent); // Prettify the response
+            messageElement.innerHTML = prettyContent;// Display the content in the message element
+          } else {
+            throw new Error("Invalid response format");
+          }
+        })
+        .catch((error) => {
+          console.error("Fetch error:", error);  // Log the error for debugging
           messageElement.classList.add("error");
           messageElement.textContent =
-            "Oops Something went wrong. Please try again.";
+            "Oops! Something went wrong. Please try again.";
         })
         .finally(() => chatbox.scrollTo(0, chatbox.scrollHeight));
     };
+    
+    
   
     const handleChat = () => {
       userMessage = chatInput.value.trim(); // Get user entered message and remove extra whitespace
+      chatmessage = chatInput.value.trim();
       if (!userMessage) return;
   
       // Clear the input textarea and set its height to default
@@ -108,4 +123,31 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.remove("show-chatbot");
     });
   });
+  const prettifyResponse = (rawString) => {
+    // Replace new lines with HTML breaks
+    let formattedString = rawString.replace(/\n/g, '<br/>');
+  
+    // Convert Markdown-like syntax to HTML
+    formattedString = formattedString
+      .replace(/(\*\*.*?\*\*)/g, '<br/><strong>$1</strong>') // Add a new line before bold text
+      
+      .replace(/^(#)(.*)$/gm, '<h6>$2</h6>') // Convert # heading to <h1>
+      .replace(/^(##)(.*)$/gm, '<h6>$2</h6>') // Convert ## heading to <h2>
+      .replace(/^(###)(.*)$/gm, '<h6>$2</h6>') // Convert ### heading to <h3>
+      .replace(/^(####)(.*)$/gm, '<h6>$2</h6>') // Convert #### heading to <h4>
+      .replace(/^(#####)(.*)$/gm, '<h6>$2</h6>') // Convert ##### heading to <h5>
+      .replace(/^(######)(.*)$/gm, '<h6>$2</h6>') // Convert ###### heading to <h6>
+      .replace(/^\d+\.\s(.*)$/gm, '<ol><li>$1</li>') // Convert ordered list numbers to <li>
+      .replace(/^\*\s(.*)$/gm, '<ul><li>$1</li>') // Convert * to unordered list
+      .replace(/<\/li>\s*<br\/>/g, '</li>') // Remove breaks after <li> tags
+      .replace(/<\/li>(?=\s*<\/ol>)/g, '</li>') // Ensure <li> is properly closed
+      .replace(/<\/li>(?=\s*<\/ul>)/g, '</li>') // Ensure <li> is properly closed for ul
+      .replace(/<\/ul>/g, '</li></ul>') // Ensure <ul> is closed properly
+      .replace(/<\/ol>/g, '</li></ol>'); // Ensure <ol> is closed properly
+  
+    // Handle cases where lists are not closed
+    formattedString = formattedString.replace(/<\/ol>(\s*<\/ol>)/g, '</ol>'); // Ensure no double closing tags
+  
+    return formattedString;
+  };
   
