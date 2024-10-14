@@ -79,9 +79,10 @@ function toggleCustomInput() {
     updateAlertCountForScope(scopeSelect.value);
     
 }
+
+
+
 function populateTable(scan) {
-   
-   
     const tbody = document.querySelector('table tbody');
     tbody.innerHTML = ''; // Clear any existing rows
 
@@ -91,30 +92,33 @@ function populateTable(scan) {
         row.innerHTML = `
         <td><input type="checkbox" value="${scan.scanid}"/></td>
         <td>${scan.scanid}</td>
-            <td> <a href="${scan.url}">${scan.url}</a></td>
-            <td>${scan.username}</td>
-            <td>${scan.scan_profile}</td>
-            <td>${scan.date}</td>
-            <td>
-                <span class="badge badge-danger" title="High">${scan.vulnerability.High}</span>
-                <span class="badge badge-warning" title="Medium">${scan.vulnerability.Medium}</span>
-                <span class="badge badge-secondary" title="Low">${scan.vulnerability.Low}</span>
-                
-            </td>    
+        <td> <a href="${scan.url}">${scan.url}</a></td>
+        <td>${scan.username}</td>
+        <td>${scan.scan_profile}</td>
+        <td>${scan.date}</td>
+        <td>
+            <span class="badge badge-danger" title="High">${scan.vulnerability.High}</span>
+            <span class="badge badge-warning" title="Medium">${scan.vulnerability.Medium}</span>
+            <span class="badge badge-secondary" title="Low">${scan.vulnerability.Low}</span>
+        </td>    
         `;
 
         tbody.appendChild(row);
 
-         const highBadge = row.querySelector('.badge-danger');
-    const mediumBadge = row.querySelector('.badge-warning');
-    const lowBadge = row.querySelector('.badge-secondary');
+        const highBadge = row.querySelector('.badge-danger');
+        const mediumBadge = row.querySelector('.badge-warning');
+        const lowBadge = row.querySelector('.badge-secondary');
 
-    highBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.high));
-    mediumBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.medium));
-    lowBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.low));
+        // Pass the risk level when clicking the badge
+        highBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.high, 'high'));
+        mediumBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.medium, 'medium'));
+        lowBadge.addEventListener('click', () => handleBadgeClick(scan.filteredAlerts.low, 'low'));
     });
-
 }
+
+
+
+
 
 async function fetchTableData(Url) {
     try {

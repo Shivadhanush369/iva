@@ -155,6 +155,46 @@ app.post("/analytics", verifyToken,async (req,res)=>{
     }
 })
 
+// API endpoint for retrieving Vulnerability Scores
+app.post('/api/vscore', verifyToken, async (req, res) => {
+    const { url } = req.body; // URL to fetch vulnerability scores for
+
+    try {
+        // Fetch report data for the specified URL
+        const reportData = await Report.find({ 'report.url.url': url });
+
+        if (!reportData || reportData.length === 0) {
+            return res.status(404).json({ error: 'No reports found for this URL' });
+        }
+
+        // Initialize an array to hold vulnerability scores
+        const vulnerabilityScores = [];
+
+        // Iterate through the report data to extract risk codes
+        reportData.forEach(report => {
+            if (report.report && Array.isArray(report.report.site)) {
+                report.report.site.forEach(site => {
+                    if (Array.isArray(site.alerts)) {
+                        site.alerts.forEach(alert => {
+                            // Push the risk code to the array
+                            vulnerabilityScores.push({
+                                riskCode: alert.riskcode,
+                                alertName: alert.alert || 'N/A',
+                                confidence: alert.confidence || 'N/A'
+                            });
+                        });
+                    }
+                });
+            }
+        });
+
+        // Send the vulnerability scores as a response
+        res.json(vulnerabilityScores);
+    } catch (error) {
+        console.error('Error fetching vulnerability scores:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 
 
@@ -423,7 +463,7 @@ setInterval(() => {
     console.log('Clearing cache');
     cache.flushAll();
 }, 300000);
-server.listen(5002, () => {
+server.listen(5004, () => {
     console.log(`Server is running on port `);
 });
 
@@ -468,6 +508,105 @@ console.log(JSON.stringify(alerts));
         res.status(500).json({ error: 'Failed to fetch reports' });
     }
 });
+
+
+
+
+
+
+// API endpoint for retrieving Vulnerability Score vs Probability
+app.post('/api/vulnerability-data', verifyToken, async (req, res) => {
+    const { url } = req.body; // URL to fetch vulnerability data for
+
+    try {
+        // Fetch report data for the specified URL
+        const reportData = await Report.find({ 'report.url.url': url });
+
+        if (!reportData || reportData.length === 0) {
+            return res.status(404).json({ error: 'No reports found for this URL' });
+        }
+
+        // Initialize arrays to hold vulnerability scores and probabilities
+        const vulnerabilityData = [];
+
+        // Iterate through the report data to extract risk codes and confidence levels
+        reportData.forEach(report => {
+            if (report.report && Array.isArray(report.report.site)) {
+                report.report.site.forEach(site => {
+                    if (Array.isArray(site.alerts)) {
+                        site.alerts.forEach(alert => {
+                            // Extract the risk code (vulnerability score) and confidence (probability)
+                            vulnerabilityData.push({
+                                riskCode: alert.riskcode,
+                                confidence: alert.confidence,
+                                alertName: alert.alert || 'N/A'
+                            });
+                        });
+                    }
+                });
+            }
+        });
+
+        // Send the vulnerability scores and probabilities as a response
+        res.json(vulnerabilityData);
+    } catch (error) {
+        console.error('Error fetching vulnerability data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+// API endpoint for retrieving total number of alerts grouped by date
+app.post('/total-alerts', verifyToken, async (req, res) => {
+    const { name } = req.authData;  // Assuming `authData` contains user information from JWT payload
+    const { url } = req.body; // URL to fetch vulnerability data for
+
+    const alertsByDate = {}; // Object to hold total alerts for each date
+
+    console.log(url);
+
+    try {
+        // Fetch history data filtered by username and URL
+        const histories = await History.find({ username: name, url: url }).select('-_id');
+
+        // Iterate through each history record to count alerts and group by date
+        histories.forEach(history => {
+            const date = history.date ? new Date(history.date).toISOString().split('T')[0] : null; // Format date as YYYY-MM-DD
+            const medium = history.vulnerability?.Medium || 0;
+            const high = history.vulnerability?.High || 0;
+            const low = history.vulnerability?.Low || 0;
+
+            const totalAlerts = medium + high + low; // Calculate total alerts for the record
+
+            // If the date exists, add the alerts, otherwise initialize it
+            if (date) {
+                if (!alertsByDate[date]) {
+                    alertsByDate[date] = 0; // Initialize total alerts for this date
+                }
+                alertsByDate[date] += totalAlerts; // Add the total alerts for this record
+            }
+        });
+
+        // Prepare the response in the desired format
+        const response = {
+            dates: Object.keys(alertsByDate),  // Dates will be the keys from the object
+            totalAlerts: Object.values(alertsByDate) // Total alerts will be the corresponding values
+        };
+
+        // Send the response
+        res.json(response);
+    } catch (error) {
+        console.error('Error fetching total alerts:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+
+
+
+
+
 
   // for manual scan 
 

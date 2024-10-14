@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overview of Vulnerability</title>
+    <link rel="stylesheet" href="vuln.css">  <!-- Link to your CSS -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+<body>
+    <h1>Vulnerabilities Analysis</h1>
+    <select id="urlSelect">
+        <option value="" disabled selected>Select URL</option>
+        <!-- Options will be populated here -->
+    </select>
+    <button id="fetchDataBtn">Fetch Data</button>
+    <div id="container" style="height: 400px; margin-top: 20px;"></div>
+
+    <script src="vuln.js"></script>  <!-- Link to your JavaScript -->
+</body>
+</html>

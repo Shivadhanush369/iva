@@ -996,3 +996,30 @@ input[type="radio"] {
       .close-button:focus {
           outline: none; /* Remove the default outline */
       }
+
+
+
+
+  /* Styles for CWE links and WASC links only */
+      .cwe-link {
+      color: blue; /* Set the text color to blue */
+      text-decoration: underline; /* Underline the text */
+      font-weight: bold;  /* Make the text bold */
+      }
+
+      .cwe-link:hover {
+      color: darkblue; /* Change color on hover for better UX */
+      }
+
+
+      .wasc-link{
+        color: blue; /* Set the text color to blue */
+        text-decoration: underline; /* Underline the text */
+        font-weight: bold;  /* Make the text bold */
+        }
+  
+        .wasc-link:hover {
+        color: darkblue; /* Change color on hover for better UX */
+        }
+
+

@@ -1,6 +1,6 @@
 
       <main>
-           <h1>Dashboard</h1>
+           <h1>IVA Spectrum</h1>
         
 
         
@@ -43,6 +43,7 @@
             <div class="card-header">Issue Details</div>
             <p>Select an issue from the left to see details here.</p>
             <!-- Details will be inserted here dynamically -->
+            
         </div>
         </div>
         <span class="close-button" onclick="closeModal()">×</span>
@@ -251,11 +252,24 @@ function populateTable(scan) {
         }
         fetchData(); */
 
-function handleBadgeClick(alertData) {
 
-  const leftCard = document.querySelector('.card-left');
+
+function handleBadgeClick(alertData, riskLevel) {
+    const leftCard = document.querySelector('.card-left');
     const rightCard = document.querySelector('.card-right');
-leftCard.innerHTML = '<div class="card-header">Issues</div>';
+
+    // Set the title based on the risk level
+    let issueTitle = '';
+    if (riskLevel === 'high') {
+        issueTitle = 'High Issues';
+    } else if (riskLevel === 'medium') {
+        issueTitle = 'Medium Issues';
+    } else if (riskLevel === 'low') {
+        issueTitle = 'Low Issues';
+    }
+
+    // Update the left card's title based on risk level
+    leftCard.innerHTML = `<div class="card-header">${issueTitle}</div>`;
 
     // Create and append issue names to the left card
     alertData.forEach((alert) => {
@@ -266,21 +280,34 @@ leftCard.innerHTML = '<div class="card-header">Issues</div>';
         leftCard.appendChild(alertElement);
     });
 
-    // Function to display alert details on the right card
-    function displayDetails(selectedAlert) {
-        rightCard.innerHTML = `
-        <div class="details-section">
-            <h2>Issue Details</h2>
-            <p><strong>Url:</strong> ${selectedAlert.url}</p>
-            <p><strong>Alert Name:</strong> ${selectedAlert.name}</p>
-            <p><strong>Description:</strong> ${selectedAlert.description}</p>
-            <p><strong>Risk Description:</strong> ${selectedAlert.risk}</p>
-            <p><strong>Solution:</strong> ${selectedAlert.solution}</p>
-            <p><strong>CWE ID:</strong> ${selectedAlert.cweid}</p>
-            <p><strong>WASC ID:</strong> ${selectedAlert.wascid}</p>
-            </div>
-        `;
-    }
+
+
+
+
+// Function to display alert details on the right card
+function displayDetails(selectedAlert) {
+    const cweLink = selectedAlert.cweid 
+        ? ` ${selectedAlert.cweid} &nbsp;&nbsp;<a href="https://cwe.mitre.org/data/definitions/${selectedAlert.cweid}.html" target="_blank" class="cwe-link">click here</a>`
+        : 'N/A'; // Check if CWE ID exists and generate the link, otherwise show 'N/A'
+
+ const wascLink = selectedAlert.wascid 
+        ? ` ${selectedAlert.wascid}&nbsp;&nbsp;&nbsp;<a href="http://projects.webappsec.org/w/page/13246974/Threat%20Classification%20Reference%20Grid" target="_blank" class="wasc-link">click here</a>`
+        : 'N/A'; // Check if WASC ID exists and generate the link, otherwise show 'N/A'
+    rightCard.innerHTML = `
+    <div class="details-section">
+        <h2>Issue Details</h2>
+        <p><strong>Url:</strong> ${selectedAlert.url}</p>
+        <p><strong>Alert Name:</strong> ${selectedAlert.name}</p>
+        <p><strong>Description:</strong> ${selectedAlert.description}</p>
+        <p><strong>Risk Description:</strong> ${selectedAlert.risk}</p>
+        <p><strong>Solution:</strong> ${selectedAlert.solution}</p>
+        <p><strong>CWE ID:</strong> ${cweLink}</p>  <!-- CWE ID with "click here" hyperlink -->
+        <p><strong>WASC ID:</strong> ${wascLink}</p>
+    </div>
+    `;
+}
+
+
     const modal = document.getElementById('modal');
    // const modalMessage = document.getElementById('modal-message');
     const body = document.querySelector('body');
