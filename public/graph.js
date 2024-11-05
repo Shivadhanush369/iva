@@ -126,94 +126,323 @@ async function fetchVulnerabilityData() {
 
         console.log('Processed data for chart:', processedData);
 
-        Highcharts.chart('containerFetch', {
-            chart: {
-                type: 'bubble',
-                zoomType: 'xy'
-            },
-            title: {
-                text: 'Vulnerability Quadrants'
-            },
-               credits: {
-        enabled: false // Disable the Highcharts credits (logo)
-    },
-            xAxis: {
-                title: {
-                    text: ''
-                },
-                gridLineWidth: 1,
-                min: -2,
-                max: 2,
-                tickInterval: 1,
-                labels: {
-                    enabled: false // Disable labels on the x-axis
-                },
-                plotLines: [{
-                    color: 'black',
-                    width: 2,
-                    value: 0
-                }]
-            },
-            yAxis: {
-                title: {
-                    text: ''
-                },
-                gridLineWidth: 1,
-                min: -2,
-                max: 2,
-                tickInterval: 1,
-                labels: {
-                    enabled: false // Disable labels on the x-axis
-                },
-                plotLines: [{
-                    color: 'black',
-                    width: 2,
-                    value: 0
-                }]
-            },
-            series: [{
-                name: 'Vulnerabilities',
-                data: processedData,
-                dataLabels: {
-                    enabled: true,
-                    format: '{point.name}',
-                    style: {
-                        color: 'black',
-                        textOutline: 'none'
-                    }
-                }
-            }],
-            plotOptions: {
-                bubble: {
-                    minSize: 15,
-                    maxSize: 50,
-                    tooltip: {
-                        headerFormat: '',
-                        pointFormat: '<b>{point.name}</b>'
-                    }
-                }
-            },
-            annotations: [{
-                labels: [{
-                    point: { x: -1, y: 1, xAxis: 0, yAxis: 0 },
-                    text: 'High Vulnerabilities',
-                    style: { color: 'red' }
-                }, {
-                    point: { x: 1, y: 1, xAxis: 0, yAxis: 0 },
-                    text: 'Medium Vulnerabilities',
-                    style: { color: 'orange' }
-                }, {
-                    point: { x: -1, y: -1, xAxis: 0, yAxis: 0 },
-                    text: 'Low Vulnerabilities',
-                    style: { color: 'yellow' }
-                }, {
-                    point: { x: 1, y: -1, xAxis: 0, yAxis: 0 },
-                    text: 'Informational Vulnerabilities',
-                    style: { color: 'blue' }
-                }]
-            }]
-        });
+    //     Highcharts.chart('containerFetch', {
+    //         chart: {
+    //             type: 'bubble',
+    //             zoomType: 'xy'
+    //         },
+    //         title: {
+    //             text: 'Vulnerability Quadrants'
+    //         },
+    //            credits: {
+    //     enabled: false // Disable the Highcharts credits (logo)
+    // },
+    //         xAxis: {
+    //             title: {
+    //                 text: ''
+    //             },
+    //             gridLineWidth: 1,
+    //             min: -2,
+    //             max: 2,
+    //             tickInterval: 1,
+    //             labels: {
+    //                 enabled: false // Disable labels on the x-axis
+    //             },
+    //             plotLines: [{
+    //                 color: 'black',
+    //                 width: 2,
+    //                 value: 0
+    //             }]
+    //         },
+    //         yAxis: {
+    //             title: {
+    //                 text: ''
+    //             },
+    //             gridLineWidth: 1,
+    //             min: -2,
+    //             max: 2,
+    //             tickInterval: 1,
+    //             labels: {
+    //                 enabled: false // Disable labels on the x-axis
+    //             },
+    //             plotLines: [{
+    //                 color: 'black',
+    //                 width: 2,
+    //                 value: 0
+    //             }]
+    //         },
+    //         series: [{
+    //             name: 'Vulnerabilities',
+    //             data: processedData,
+    //             dataLabels: {
+    //                 enabled: true,
+    //                 format: '{point.name}',
+    //                 style: {
+    //                     color: 'black',
+    //                     textOutline: 'none'
+    //                 }
+    //             }
+    //         }],
+    //         plotOptions: {
+    //             bubble: {
+    //                 minSize: 15,
+    //                 maxSize: 50,
+    //                 tooltip: {
+    //                     headerFormat: '',
+    //                     pointFormat: '<b>{point.name}</b>'
+    //                 }
+    //             }
+    //         },
+    //         annotations: [{
+    //             labels: [{
+    //                 point: { x: -1, y: 1, xAxis: 0, yAxis: 0 },
+    //                 text: 'High Vulnerabilities',
+    //                 style: { color: 'red' }
+    //             }, {
+    //                 point: { x: 1, y: 1, xAxis: 0, yAxis: 0 },
+    //                 text: 'Medium Vulnerabilities',
+    //                 style: { color: 'orange' }
+    //             }, {
+    //                 point: { x: -1, y: -1, xAxis: 0, yAxis: 0 },
+    //                 text: 'Low Vulnerabilities',
+    //                 style: { color: 'yellow' }
+    //             }, {
+    //                 point: { x: 1, y: -1, xAxis: 0, yAxis: 0 },
+    //                 text: 'Informational Vulnerabilities',
+    //                 style: { color: 'blue' }
+    //             }]
+    //         }]
 
+    // Highcharts.chart('containerFetch', {
+    //     chart: {
+    //         type: 'bubble',
+    //         zoomType: 'xy'
+    //     },
+    //     title: {
+    //         text: 'Vulnerability Quadrants'
+    //     },
+    //     credits: {
+    //         enabled: false // Disable the Highcharts credits (logo)
+    //     },
+    //     xAxis: {
+    //         title: {
+    //             text: ''
+    //         },
+    //         gridLineWidth: 1,
+    //         min: -2,
+    //         max: 2,
+    //         tickInterval: 1,
+    //         labels: {
+    //             enabled: false // Disable labels on the x-axis
+    //         },
+    //         plotLines: [{
+    //             color: 'black',
+    //             width: 2,
+    //             value: 0
+    //         }]
+    //     },
+    //     yAxis: {
+    //         title: {
+    //             text: ''
+    //         },
+    //         gridLineWidth: 1,
+    //         min: -2,
+    //         max: 2,
+    //         tickInterval: 1,
+    //         labels: {
+    //             enabled: false // Disable labels on the y-axis
+    //         },
+    //         plotLines: [{
+    //             color: 'black',
+    //             width: 2,
+    //             value: 0
+    //         }]
+    //     },
+    //     series: [{
+    //         name: 'Vulnerabilities',
+    //         data: processedData,
+    //         dataLabels: {
+    //             enabled: true,
+    //             format: '{point.name}',
+    //             style: {
+    //                 color: 'black',
+    //                 textOutline: 'none'
+    //             }
+    //         },
+    //         colorByPoint: true // Automatically apply colors based on the data
+    //     }],
+    //     plotOptions: {
+    //         bubble: {
+    //             minSize: 15,
+    //             maxSize: 50,
+    //             tooltip: {
+    //                 headerFormat: '',
+    //                 pointFormat: '<b>{point.name}</b>'
+    //             }
+    //         }
+    //     },
+    //     legend: {
+    //         layout: 'horizontal',
+    //         align: 'center',
+    //         verticalAlign: 'bottom',
+    //         floating: false, // Set to false to position it at the bottom
+    //         backgroundColor: 'white',
+    //         borderColor: '#ccc',
+    //         borderWidth: 1,
+    //         shadow: false,
+    //         itemStyle: {
+    //             fontWeight: 'normal',
+    //             fontSize: '12px' // Optional: Adjust the font size
+    //         },
+    //         y: 0 // Adjust this value to move it down further if needed
+    //     },
+    //     // Custom legend items
+    //     series: [{
+    //         name: 'Vulnerabilities',
+    //         data: processedData,
+    //         dataLabels: {
+    //             enabled: true,
+    //             format: '{point.name}',
+    //             style: {
+    //                 color: 'black',
+    //                 textOutline: 'none'
+    //             }
+    //         },
+    //         colorByPoint: true // Use this for color mapping from data
+    //     }, {
+    //         name: 'High Vulnerabilities',
+    //         color: 'red',
+    //         data: [{ x: null, y: null }] // Placeholder for legend
+    //     }, {
+    //         name: 'Medium Vulnerabilities',
+    //         color: 'orange',
+    //         data: [{ x: null, y: null }] // Placeholder for legend
+    //     }, {
+    //         name: 'Low Vulnerabilities',
+    //         color: 'yellow',
+    //         data: [{ x: null, y: null }] // Placeholder for legend
+    //     }, {
+    //         name: 'Informational Vulnerabilities',
+    //         color: 'blue',
+    //         data: [{ x: null, y: null }] // Placeholder for legend
+    //     }]
+    // });
+
+    Highcharts.chart('containerFetch', {
+        chart: {
+            type: 'bubble',
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'Vulnerability Quadrants'
+        },
+        credits: {
+            enabled: false // Disable the Highcharts credits (logo)
+        },
+        xAxis: {
+            title: {
+                text: ''
+            },
+            gridLineWidth: 1,
+            min: -2,
+            max: 2,
+            tickInterval: 1,
+            labels: {
+                enabled: false // Disable labels on the x-axis
+            },
+            plotLines: [{
+                color: 'black',
+                width: 2,
+                value: 0
+            }]
+        },
+        yAxis: {
+            title: {
+                text: ''
+            },
+            gridLineWidth: 1,
+            min: -2,
+            max: 2,
+            tickInterval: 1,
+            labels: {
+                enabled: false // Disable labels on the y-axis
+            },
+            plotLines: [{
+                color: 'black',
+                width: 2,
+                value: 0
+            }]
+        },
+        series: [{
+            name: 'Vulnerabilities',
+            data: processedData,
+            dataLabels: {
+                enabled: true,
+                format: '{point.name}',
+                style: {
+                    color: 'black',
+                    textOutline: 'none'
+                }
+            },
+            colorByPoint: true // Automatically apply colors based on the data
+        }, {
+            name: 'High Vulnerabilities',
+            color: 'red',
+            data: [], // No actual data points
+            visible: true // Start visible
+        }, {
+            name: 'Medium Vulnerabilities',
+            color: 'orange',
+            data: [], // No actual data points
+            visible: true // Start visible
+        }, {
+            name: 'Low Vulnerabilities',
+            color: 'yellow',
+            data: [], // No actual data points
+            visible: true // Start visible
+        }, {
+            name: 'Informational Vulnerabilities',
+            color: 'blue',
+            data: [], // No actual data points
+            visible: true // Start visible
+        }],
+        plotOptions: {
+            bubble: {
+                minSize: 15,
+                maxSize: 50,
+                tooltip: {
+                    headerFormat: '',
+                    pointFormat: '<b>{point.name}</b>'
+                }
+            },
+            series: {
+                events: {
+                    legendItemClick: function (event) {
+                        // Toggle the visibility of the clicked series
+                        this.setVisible(!this.visible);
+                        return false; // Prevent default action (do not toggle other series)
+                    }
+                }
+            }
+        },
+        legend: {
+            layout: 'horizontal',
+            align: 'center',
+            verticalAlign: 'bottom',
+            floating: false, // Set to false to position it at the bottom
+            backgroundColor: 'white',
+            borderColor: '#ccc',
+            borderWidth: 1,
+            shadow: false,
+            itemStyle: {
+                fontWeight: 'normal',
+                fontSize: '12px' // Optional: Adjust the font size
+            },
+            y: 20 // Adjust as necessary to position the legend
+        }
+    });
+    
+    
         console.log('Chart successfully created.');
 
     } catch (error) {
