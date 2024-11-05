@@ -178,7 +178,39 @@ barcode_scanner
             </tbody>
         </table>
          <a href="#">Show All</a>
+         
+  {{!-- <h2>Vulnerability Analysis - Quadrant View</h2>
+    <div id="containerFetch"></div> <!-- Chart Container -->
+    <h2>Trend Analysis</h2>
+    <div id="containerVuln" style="height: 400px; margin-top: 20px;"></div>
+    --}}
+    {{!-- <div class="card">
+            <h2>Vulnerability Analysis - Quadrant View</h2>
+            <div id="containerFetch"></div> <!-- Chart Container -->
+        </div>
+        <div class="card">
+            <h2>Trend Analysis</h2>
+            <div id="containerVuln"></div> <!-- Chart Container -->
+        </div>
+    </div> --}}
+
+  <div class="cards">
+    <div class="card" style="flex: 1; width: 50%;"> <!-- First card taking more space -->
+        <h2>Vulnerability Analysis - Quadrant View</h2>
+        <div id="containerFetch" style="width: 100%; height: 400px;"></div> <!-- Chart Container -->
+    </div>
+    <div class="card" style="flex: 1; width: 50%;"> <!-- Second card taking less space -->
+        <h2>Trend Analysis</h2>
+        <div id="containerVuln" style="width: 100%; height: 400px;"></div> <!-- Chart Container -->
+    </div>
+</div>
+<br><br>
+
+   
+
       </div>
+
+  
 
       </main>
 
@@ -186,6 +218,10 @@ barcode_scanner
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     
+
+          <!-- Include Highcharts and Highcharts-more for bubble charts -->
+      <script src="https://code.highcharts.com/highcharts.js"></script>
+      <script src="https://code.highcharts.com/highcharts-more.js"></script> 
 
     <script>
     // since this were shifted to newscript.js im commenting this , their table data is populated based on scope

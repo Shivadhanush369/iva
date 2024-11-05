@@ -525,8 +525,8 @@ app.post('/api/vulnerability-data', verifyToken, async (req, res) => {
         if (!reportData || reportData.length === 0) {
             return res.status(404).json({ error: 'No reports found for this URL' });
         }
-
-        // Initialize arrays to hold vulnerability scores and probabilities
+ 
+     // Initialize arrays to hold vulnerability scores and probabilities
         const vulnerabilityData = [];
 
         // Iterate through the report data to extract risk codes and confidence levels
@@ -601,10 +601,124 @@ app.post('/total-alerts', verifyToken, async (req, res) => {
     }
 });
 
+app.post("/vuln-analysis", verifyToken,async (req,res)=>{
+    const { name } = req.authData;  // Assuming `authData` contains user information from JWT payload
+    const { url } = req.body;
+    const date =[];
+    const medium = [];
+    const high =[];
+    const low =[];
+    const informational = [];
+    console.log(url);
+    try {
+        // Fetch history data filtered by username ""
+        const histories = await History.find({ username: name, url: url }).select('-_id');
+        
+        histories.forEach(history => {
+        
+            date.push(history.date);
+            medium.push(history.vulnerability.Medium);
+            high.push(history.vulnerability.High);
+            low.push(history.vulnerability.Low);
+            informational.push(history.vulnerability.Informational);  // Adding informational vulnerabilities
+
+        });
+        const response = {
+            dates: date,
+            mediumVulnerabilities: medium,
+            highVulnerabilities: high,
+            lowVulnerabilities: low,
+            informationalVulnerabilities: informational  // Include in the response
+
+          };
+          res.json(response);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch data' });
+    }
+})
 
 
 
 
+
+app.post("/api/alerts", verifyToken, async (req, res) => {
+    const { name } = req.authData;  // Extract username from JWT payload
+    const { url } = req.body;        // URL to filter alerts by
+    const high = [];
+    const medium = [];
+    const low = [];
+    const informational = [];
+
+    try {
+        // Fetch history data filtered by username and URL
+        const histories = await History.find({ username: name, url: url }).select('-_id');
+        
+        if (histories.length === 0) {
+            return res.status(404).json({ error: 'No history found for the specified URL.' });
+        }
+
+        // Process each history entry to extract alerts
+        histories.forEach(history => {
+            console.log('Current History Entry:', history); // Log the entire history entry for inspection
+            
+            const alerts = history.filteredAlerts; // Access filteredAlerts instead of vulnerability
+            
+            console.log('Filtered Alerts:', alerts); // Log the filtered alerts to see their structure
+            
+            // Check for and process high vulnerabilities
+            if (Array.isArray(alerts.high)) {
+                alerts.high.forEach(alert => {
+                    high.push(alert.name); // Push only the alert name
+                });
+            } else {
+                console.log('No High vulnerabilities found or not an array.');
+            }
+
+            // Check for and process medium vulnerabilities
+            if (Array.isArray(alerts.medium)) {
+                alerts.medium.forEach(alert => {
+                    medium.push(alert.name); // Push only the alert name
+                });
+            } else {
+                console.log('No Medium vulnerabilities found or not an array.');
+            }
+
+            // Check for and process low vulnerabilities
+            if (Array.isArray(alerts.low)) {
+                alerts.low.forEach(alert => {
+                    low.push(alert.name); // Push only the alert name
+                });
+            } else {
+                console.log('No Low vulnerabilities found or not an array.');
+            }
+
+            // Check for and process informational vulnerabilities
+            if (Array.isArray(alerts.informational)) {
+                alerts.informational.forEach(alert => {
+                    informational.push(alert.name); // Push only the alert name
+                });
+            } else {
+                console.log('No Informational vulnerabilities found or not an array.');
+            }
+        });
+
+        // Format the response in the desired structure
+        const response = {
+            username: name,
+            url: url,
+            highVulnerabilities: high,
+            mediumVulnerabilities: medium,
+            lowVulnerabilities: low,
+            informationalVulnerabilities: informational
+        };
+
+        res.json(response);
+    } catch (error) {
+        console.error("Error processing alerts:", error);
+        res.status(500).json({ error: "Failed to fetch data" });
+    }
+});
 
 
 
@@ -663,7 +777,7 @@ console.log(targetUrl);
         log('Spider completed. Starting active scan...');
         const scanId = await scan.startScan(targetUrl);
         log(`Scan started with ID: ${scanId}`);
-
+e
         let scanStatus = '0';
         while (scanStatus !== '100') {
             scanStatus = await scan.checkScanStatus(scanId);

@@ -3,7 +3,7 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const { URL } = require('url');
 const ZAP_HOST = 'http://localhost:8080'; // Change this to your ZAP host
-const API_KEY = 'sf1l9d7pvavoh4qfbkkvrh14h3';
+const API_KEY = 'm54cpsd8nr7elj7q6mdtei1rfd';
 const History = require('../models/History');
 const Report = require('../models/Report');
 const asidealerts = require('../models/asidealert');
@@ -16,7 +16,7 @@ async function spiderUrl(url) {
                 apikey: API_KEY
             }
         });
-        return response.data.scan;
+        return response.data.scan;  
     } catch (error) {
         throw new Error(`Failed to start spider: ${error.message}`);
     }

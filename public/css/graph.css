@@ -1,0 +1,18 @@
+.cards {
+    display: flex; /* Use flexbox to arrange cards in a row */
+    justify-content: space-between; /* Space the cards evenly */
+    width: 100%; /* Ensure the container takes the full width */
+    flex-wrap: nowrap; /* Prevent cards from wrapping to the next line */
+}
+
+.card {
+    border: 1px solid #ccc; /* Optional: for visibility */
+    padding: 10px; /* Optional: for spacing */
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Optional: for visual effect */
+    margin-right: 10px; /* Add margin to the right of each card */
+}
+
+/* Optional: Remove margin from the last card */
+.card:last-child {
+    margin-right: 0; /* Prevent margin on the last card */
+}

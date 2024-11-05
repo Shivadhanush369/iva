@@ -77,6 +77,10 @@ function toggleCustomInput() {
     donutchart(scopeSelect.value);
     fetchAndUpdateChart(scopeSelect.value);
     updateAlertCountForScope(scopeSelect.value);
+
+        // Call vulnerability and total alerts functions
+        fetchVulnerabilityData(scopeSelect.value); // Call graph.js function
+        fetchTotalAlerts(scopeSelect.value); // Call vuln.js function
     
 }
 
@@ -334,6 +338,7 @@ function getRiskClass(riskdesc) {
         return ''; // Default class if no known risk level is found
     }
 }
+
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('jwtToken');
     const username = localStorage.getItem('username');

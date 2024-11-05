@@ -1,6 +1,7 @@
 // Fetch available URLs and populate the dropdown
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('jwtToken'); // Retrieve the token from local storage
+    const urlSelect = document.getElementById('scope'); // Select the dropdown element
 
     try {
         // Fetch scopes or URLs with authorization header
@@ -17,14 +18,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const data = await response.json();
-        const urlSelect = document.getElementById('urlSelect');
 
+        // Clear the dropdown first
+        urlSelect.innerHTML = ''; 
+
+        // Add a default option
+        const defaultOption = document.createElement('option');
+        defaultOption.value = ''; // No value for default
+        defaultOption.text = 'Select your scope'; // Default text
+        defaultOption.disabled = true; // Make it unselectable
+        defaultOption.selected = true; // Set it as selected
+        urlSelect.appendChild(defaultOption);
+
+        // Populate the dropdown with fetched scopes
         data.forEach(scope => {
             const option = document.createElement('option');
             option.value = scope.url; // Assuming scope contains url field
             option.text = scope.name; // Assuming scope contains name field
             urlSelect.appendChild(option);
         });
+
+        // Set up event listener for dropdown changes
+        urlSelect.addEventListener('change', fetchTotalAlerts);
+
     } catch (error) {
         console.error('Error fetching scopes:', error);
     }
@@ -32,9 +48,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Function to fetch total alerts and plot the chart
 async function fetchTotalAlerts() {
-    const urlSelect = document.getElementById('urlSelect');
-    const url = urlSelect.value;
+    const urlSelect = document.getElementById('scope');
+    const url = urlSelect.value; // Get the selected URL
     const token = localStorage.getItem('jwtToken'); // Retrieve the token from local storage
+
+    // Check if the user has selected a valid scope
+    if (!url) {
+        console.warn('No scope selected. Please select a scope.');
+        return; // Exit the function if no valid option is selected
+    }
 
     try {
         const response = await fetch('/total-alerts', {
@@ -54,17 +76,25 @@ async function fetchTotalAlerts() {
         console.log('Fetched total vulnerabilities data:', data); // Log fetched data for debugging
 
         // Prepare data for Highcharts
-        const dates = data.dates;
-        const totalAlerts = data.totalAlerts;
+        const dates = data.dates; // Ensure this matches the response structure
+        const totalAlerts = data.totalAlerts; // Ensure this matches the response structure
 
-        // Create the Highcharts chart
-        Highcharts.chart('container', {
+        // Check if dates and totalAlerts are valid arrays
+        if (!Array.isArray(dates) || !Array.isArray(totalAlerts) || dates.length !== totalAlerts.length) {
+            throw new Error('Data format is invalid. Ensure dates and totalAlerts arrays are of equal length.');
+        }
+
+        // Create the Highcharts chart using the specified ID
+        Highcharts.chart('containerVuln', {
             chart: {
                 type: 'line',
                 zoomType: 'x'
             },
             title: {
                 text: 'Vulnerabilities Overview'
+            },
+            credits: {
+                enabled: false // Disable the Highcharts credits (logo)
             },
             xAxis: {
                 categories: dates,
@@ -89,10 +119,8 @@ async function fetchTotalAlerts() {
                 pointFormat: '<b>{point.y}</b>'
             }
         });
+
     } catch (error) {
         console.error('Error fetching total alerts:', error);
     }
 }
-
-// Attach event listener to the button
-document.getElementById('fetchDataBtn').addEventListener('click', fetchTotalAlerts);
