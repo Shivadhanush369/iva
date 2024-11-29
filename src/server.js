@@ -2,7 +2,10 @@ const e = require("express");
 const fs = require('fs');
 require('./scheduler1');
 const express = require("express");
+const axios = require('axios');
 const socketIo = require('socket.io');
+const Jiraticket =  require('./models/Jiraticket');
+
 const http = require('http');
 const scan = require("./commons/scan");
 const path = require("path");
@@ -485,6 +488,10 @@ app.get("/analytic", (req, res) => {
     res.render("analytics");
 });
 
+app.get("/configuration", (req, res) => {
+    res.render("configuration");
+});
+
 app.get('/partials/:name', (req, res) => {
     const name = req.params.name;
     console.log(name);
@@ -493,7 +500,7 @@ app.get('/partials/:name', (req, res) => {
   
 //new code
 
-app.post('/alerts',  verifyToken,async (req, res) => {
+app.post('/alerts', verifyToken,async (req, res) => {
     const { name } = req.authData;  
    
     let url =req.body.url;
@@ -796,3 +803,77 @@ e
         sockets.forEach(socket => socket.emit('error', { url: targetUrl, message: error.message }));
     }
 }
+
+app.post("/submit-jira-connection", verifyToken,async (req, res) => {
+    console.log("kmk");
+ 
+        try{
+        const jirausername = req.body.jiraUsername;
+        const jiratoken = req.body.jiraToken;
+        const jiraurl = req.body.jiraUrl;
+        const orgname =  req.body.organizationName;
+        
+       
+            const result = await Jiraticket.updateOne(
+                { orgname }, // Find document by orgname
+                {
+                    $set: { jirausername, jiratoken, jiraurl }, // Update the fields
+                },
+                { upsert: true } // If no matching document, create one
+            );
+    
+        res.status(201).json({
+            message: "Jira connection configuration saved successfully",
+            
+        });
+        } catch (error) {
+            console.error("Error saving Jira connection:", error);
+            res.status(500).json({
+                message: "Failed to save Jira connection configuration",
+                error: error.message
+            });
+        }
+
+    
+    });
+
+
+    app.post("/test-jira-connection", verifyToken, async (req, res) => {
+        console.log("kmk");
+    
+        const username = req.body.username;
+        const jiraUsername = req.body.jiraUsername;
+        const jiraToken = req.body.jiraToken;
+        const jiraUrl = req.body.jiraUrl + "/rest/api/3/myself";
+        const organizationName = req.body.organizationName;
+    
+        // Encode username and password
+        const auth = 'Basic ' + Buffer.from(`${jiraUsername}:${jiraToken}`).toString('base64');
+    
+        try {
+            const response = await axios.get(jiraUrl, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': auth // Set the Authorization header
+                }
+            });
+            return res.status(200).json({ message: 'Connection successful' }); // Send JSON response with 200 status
+    
+        } catch (error) {
+            console.error(error);
+            
+            // Check if error.response exists before accessing error.response.data
+            if (error.response) {
+                return res.status(500).json({ 
+                    error: 'Failed to create ticket', 
+                    details: error.response.data || 'No details available' 
+                });
+            } else {
+                // If there's no response (e.g., network error)
+                return res.status(500).json({ 
+                    error: 'Request failed', 
+                    details: error.message || 'No details available'
+                });
+            }
+        }
+    });

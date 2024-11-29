@@ -1,0 +1,370 @@
+<body>
+  <h1>Jira</h1>
+  <div class="tabs">
+    <!-- Radio buttons for tab switching -->
+    <input type="radio" name="tab" id="tab1" checked>
+    <input type="radio" name="tab" id="tab2">
+
+    <!-- Tab navigation -->
+    <div class="tab-titles">
+      <div class="jira-image">
+        <label for="tab1" class="tab-title">
+          <img src="../jira.png" alt="Jira">
+        </label>
+      </div>
+      <div>
+        <label for="tab2" class="tab-title">
+          <img src="../otrs4.png" alt="OTRS">
+        </label>
+      </div>
+    </div>
+
+    <!-- Tab content -->
+    <div class="tab-content">
+      <div class="content" id="content1">
+        <div class="form-container">
+          <h2>Jira Integration</h2>
+          <form action="#" method="POST">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="jiraUsername">Jira Username</label>
+                <input type="text" id="jiraUsername" name="jiraUsername" placeholder="Enter Jira username" required>
+              </div>
+
+              <div class="form-group">
+                <label for="jiraToken">Jira Token</label>
+                <input type="password" id="jiraToken" name="jiraToken" placeholder="Enter Jira token" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="jiraUrl">Jira URL</label>
+                <input type="text" id="jiraUrl" name="jiraUrl" placeholder="Enter Jira URL" required>
+              </div>
+
+              <div class="form-group">
+                <label for="projectKey">Project Key</label>
+                <input type="text" id="projectKey" name="projectKey" placeholder="Enter Jira project key" readonly>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="organizationName">Organization Name</label>
+                <input type="text" id="organizationName" name="organizationName" placeholder="Enter your organization name" readonly>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" id="submitjiradata"class="submit-btn">Submit</button>
+               <div id="submitStatus" class="status-message"></div>
+              <button type="button" id="testConnectionBtn" class="test-btn">Test Connection</button>
+              <div id="connectionStatus" class="status-message"></div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="content" id="content2">
+        <h2>This feature is under development. Please check back soon.</h2>
+        
+      </div>
+    </div>
+  </div>
+</body>
+
+<style>
+
+  /* Test Connection Button */
+  button.test-btn {
+    margin-left: 10px;
+    padding: 1rem;
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button.test-btn:hover {
+    background-color: #d68910;
+  }
+
+  /* Align Submit and Test Connection Buttons */
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .status-message {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+    color: #333;
+  }
+
+  /* Form styling */
+  .form-container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 100%;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    flex: 1; /* Allows the form groups to share space evenly */
+  }
+
+  label {
+    display: block;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+
+  input {
+    width: 100%; /* Makes the input take up all available space */
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  input:focus {
+    border-color: #3498db;
+  }
+
+  button.submit-btn {
+    width: 50%;
+    padding: 1rem;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button.submit-btn:hover {
+    background-color: #2980b9;
+  }
+
+  /* Style for the tabs container */
+  .tabs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .tab-titles {
+    display: flex;
+    gap: 10px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    padding: 10px;
+  }
+
+  .tab-title {
+    padding: 10px;
+    font-size: 16px;
+    text-align: center;
+    background-color: #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+
+  .tab-title:hover {
+    background-color: #ccc;
+  }
+
+  img {
+   height: 44px;
+  width: 109px;
+  }
+
+  .tab-content {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-around;
+    box-sizing: border-box;
+  }
+
+  .content {
+    display: none;
+    width: 100%;
+  }
+
+  /* Hide radio buttons */
+  input[type="radio"] {
+    display: none;
+  }
+
+  /* Show content for the selected tab */
+  input#tab1:checked ~ .tab-content #content1,
+  input#tab2:checked ~ .tab-content #content2 {
+    display: block;
+  }
+
+  /* Active tab style */
+  input#tab1:checked ~ .tab-titles label[for="tab1"],
+  input#tab2:checked ~ .tab-titles label[for="tab2"] {
+    background-color: #10bbbb;
+    color: white;
+  }
+
+  input#tab1:checked ~ .tab-titles label[for="tab1"]:hover,
+  input#tab2:checked ~ .tab-titles label[for="tab2"]:hover {
+    background-color: #10bbbb;
+  }
+
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('jwtToken');
+    const username = localStorage.getItem('username');
+    
+    if (!token || !username) {
+        window.location.href = '/'; // Redirect to your login page
+    } else {
+        const organizationNameInput = document.querySelector("#organizationName");
+        if (organizationNameInput) {
+            organizationNameInput.value = username;
+        }
+    }
+
+    // Handle Test Connection button click
+    const testConnectionBtn = document.getElementById("testConnectionBtn");
+    const connectionStatus = document.getElementById("connectionStatus");
+
+    testConnectionBtn.addEventListener("click", async () => {
+        connectionStatus.textContent = "Testing connection...";
+        connectionStatus.style.color = "#3498db";
+
+        const jiraUsername = document.getElementById("jiraUsername").value;
+        const jiraToken = document.getElementById("jiraToken").value;
+        const jiraUrl = document.getElementById("jiraUrl").value;
+        const projectKey = document.getElementById("projectKey").value;
+        const orgName = username;
+
+        // Validate the input fields before making the API call
+        if (!jiraUsername || !jiraToken || !jiraUrl) {
+            connectionStatus.textContent = "Please fill in all fields.";
+            connectionStatus.style.color = "orange";
+            return; // Stop further execution if fields are empty
+        }
+
+        try {
+            const response = await fetch('/test-jira-connection', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    username: username,
+                    jiraUsername: jiraUsername,
+                    jiraToken: jiraToken,
+                    jiraUrl: jiraUrl,
+                    projectKey: projectKey,
+                    organizationName: orgName,
+                }),
+            });
+
+            if (response.ok) {
+                connectionStatus.textContent = "Connection successful!";
+                connectionStatus.style.color = "green";
+            } else {
+                const error = await response.json();
+                connectionStatus.textContent = error.message || "Connection failed!";
+                connectionStatus.style.color = "red";
+            }
+        } catch (error) {
+            connectionStatus.textContent = "Connection failed!";
+            connectionStatus.style.color = "red";
+        }
+    });
+
+    // Handle form submission for Jira data
+    const form = document.querySelector('form');
+    const submitStatus = document.getElementById("submitStatus");
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();  // Prevent form submission and page reload
+
+        // Update the status message to inform the user
+        submitStatus.textContent = "Submitting data...";
+        submitStatus.style.color = "#3498db";
+
+        const jiraUsername = document.getElementById("jiraUsername").value;
+        const jiraToken = document.getElementById("jiraToken").value;
+        const jiraUrl = document.getElementById("jiraUrl").value;
+        const projectKey = document.getElementById("projectKey").value;
+        const orgName = username; // Organization name from localStorage
+
+        // Validate the input fields
+        if (!jiraUsername || !jiraToken || !jiraUrl) {
+            submitStatus.textContent = "Please fill in all fields.";
+            submitStatus.style.color = "orange";
+            return; // Stop if fields are empty
+        }
+
+        try {
+            const response = await fetch('/submit-jira-connection', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`, // Use the token from localStorage
+                },
+                body: JSON.stringify({
+                    username: username,  // From localStorage
+                    jiraUsername: jiraUsername,
+                    jiraToken: jiraToken,
+                    jiraUrl: jiraUrl,
+                    projectKey: projectKey,
+                    organizationName: orgName,
+                }),
+            });
+
+            if (response.ok) {
+                submitStatus.textContent = "Data submitted successfully!";
+                submitStatus.style.color = "green";
+            } else {
+                const error = await response.json();
+                submitStatus.textContent = error.message || "Submission failed!";
+                submitStatus.style.color = "red";
+            }
+        } catch (error) {
+            submitStatus.textContent = "Submission failed!";
+            submitStatus.style.color = "red";
+        }
+    });
+});
+
+</script>
