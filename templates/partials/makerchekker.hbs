@@ -1,5 +1,109 @@
 
       <main>
+<div class="notification">
+       
+     </div>
+
+<div id="popup" class="popup hidden">
+    <div class="popup-content">
+     <div class="tabs">
+    <!-- Radio buttons for tab switching -->
+    <input type="radio" name="tab" id="tab1" checked>
+    <input type="radio" name="tab" id="tab2">
+
+    <!-- Tab navigation -->
+    <div class="tab-titles">
+      <div class="jira-image">
+        <label for="tab1" class="tab-title">
+          <img src="../jira.png" alt="Jira">
+        </label>
+      </div>
+      <div>
+        <label for="tab2" class="tab-title">
+          <img src="../otrs4.png" alt="OTRS">
+        </label>
+      </div>
+    </div>
+
+    <!-- Tab content -->
+    <div class="tab-content">
+      <div class="content" id="content1">
+        <div class="popup-header">
+            IVA 
+            <span>(Bug, Story, Task, Epic)</span>
+        </div>
+        <div class="form-element">
+        <div class="form-group">
+             <label for="description">ScanId</label>
+            <select id="ticketscanid" >
+                    <option value="" disabled selected>Select your scope</option>
+   </select>
+                      <label for="summary">Url </label>
+            <select id="ticketscope" >
+                    <option value="" disabled selected>Select your scope</option>
+                    
+                </select>
+                 <label for="summary">vulnerability</label>
+
+            <select id="vulnerabilityscope" onchange="setTicketSummary()">
+                    <option value="" disabled selected>Select your scope</option>
+                    
+                </select>
+       
+        </div>
+        
+        <div class="form-group">
+                 <label for="summary">Summary</label>
+            <input type="text" class="summary" id="summary" placeholder="Enter task summary"readonly>
+            
+            <label for="summary">Assignee</label>
+            <select type="text" id="asign" placeholder="select Assignee"></select>
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Describe the task"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="type">Type</label>
+            <select id="type">
+                <option value="10002">Bug</option>
+                <option value="10003">Story</option>
+                <option value="10001">Task</option>
+                <option value="10004">Epic</option>
+            </select>
+        </div>
+
+        <div class="popup-buttons">
+            <button class="btn-close" onclick="ticketpopclose()">Close</button>
+            <button class="ticket-submit" onclick="ticketsubmit()">Submit</button>
+        </div>
+ </div>
+        <div class="popup-footer">
+            Project: IVA - Powered by Team
+       
+        </div>
+      </div>
+      <div class="content" id="content2">
+        <h2>This feature is under development. Please check back soon.</h2>
+        
+      </div>
+    </div>
+  </div>
+
+
+
+                <button id="closePopup" class="close-btn">Close</button>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
            <h1>IVA Spectrum</h1>
         
 
@@ -64,60 +168,11 @@
                 
                 </div>
 </div>
-        <div class="insights">
 
-           <!-- start seling -->
-            <div class="sales">
-               <span class="material-symbols-sharp">trending_up</span>
-               <div class="middle">
-
-                 <div class="left">
-                   <h3>CWE</h3>
-                   <h1>select the scope</h1>
-                 </div>
-                 
-
-               </div>
-               <small>Last 24 Hours</small>
-            </div>
-           <!-- end seling -->
-              <!-- start expenses -->
-              <div class="scans">
-               <span class="material-symbols-outlined">
-barcode_scanner
-</span>
-                <div class="middle">
- 
-                  <div class="left">
-                    <h3>Total Scans</h3>
-                    <h1>select the scope</h1>
-                  </div>
-                   
- 
-                </div>
-                <small>Last 24 Hours</small>
-             </div>
-            <!-- end seling -->
-               <!-- start seling -->
-               <div class="alerts">
-                
-               <span class="material-symbols-outlined">warning</span>
-                <div class="middle">
- 
-                  <div class="left">
-                    <h3>Total Alerts</h3>
-                    <h1>select the scope</h1>
-                  </div>
-                </div>
-                <small>Last 24 Hours</small>
-             </div>
-            <!-- end seling -->
-
-        </div>
        <!-- end insights -->
          
       <div class="recent_order">
-         <h2>Recent </h2>
+        <button class="false-positive"> confirm False Positive</button>
          <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 {{!-- <button class="btn btn-primary mr-2">New Scan</button>
@@ -134,10 +189,10 @@ barcode_scanner
                     <th scope="col">Check</th>
                     <th scope="col">ScanId</th>
                     <th scope="col">Target</th>
-                    <th scope="col">Target Description</th>
-                    <th scope="col">Scan Profile</th>
-                    <th scope="col">Schedule</th>
-                    <th scope="col">Vulnerabilities</th>
+                    <th scope="col">Risk</th>
+                    <th scope="col">Vulnerability</th>
+                    <th scope="col">False positive</th>
+                    <th scope="col">Ticket</th>
                     
                 </tr>
             </thead>
@@ -194,16 +249,7 @@ barcode_scanner
         </div>
     </div> --}}
 
-  <div class="cards">
-    <div class="card" style="flex: 1; width: 50%;"> <!-- First card taking more space -->
-        <h2>Vulnerability Analysis</h2>
-        <div id="containerFetch" style="width: 100%; height: 400px;"></div> <!-- Chart Container -->
-    </div>
-    <div class="card" style="flex: 1; width: 50%;"> <!-- Second card taking less space -->
-        <h2>Trend Analysis</h2>
-        <div id="containerVuln" style="width: 100%; height: 400px;"></div> <!-- Chart Container -->
-    </div>
-</div>
+
 <br><br>
 
    
@@ -339,7 +385,6 @@ function displayDetails(selectedAlert) {
         <p><strong>Solution:</strong> ${selectedAlert.solution}</p>
         <p><strong>CWE ID:</strong> ${cweLink}</p>  <!-- CWE ID with "click here" hyperlink -->
         <p><strong>WASC ID:</strong> ${wascLink}</p>
-        <p><strong>Prediction:</strong>${selectedAlert.prediction}</p>
     </div>
     `;
 }
@@ -391,56 +436,7 @@ function closeModal() {
 document.querySelector('#modal button').addEventListener('click', closeModal);
 
 
-const reportData1 = {
-            // Your reportData1 object here...
-        };
 
-        const reportData2 = {
-            // Your reportData2 object here...
-        };
-
-        const displayMediumAlerts = (report, elementId) => {
-            const mediumAlerts = report.filteredAlerts.medium.map(alert => `<li>${alert.name}</li>`).join('');
-            document.getElementById(elementId).innerHTML = mediumAlerts;
-        };
-
-        const compareReports = () => {
-            displayMediumAlerts(reportData1, 'medium-alerts-report1');
-            displayMediumAlerts(reportData2, 'medium-alerts-report2');
-
-            const mediumNames1 = reportData1.filteredAlerts.medium.map(alert => alert.name);
-            const mediumNames2 = reportData2.filteredAlerts.medium.map(alert => alert.name);
-
-            mediumNames1.forEach((name, index) => {
-                if (mediumNames2.indexOf(name) === -1) {
-                    document.querySelector(`#medium-alerts-report1 li:nth-child(${index + 1})`).classList.add('highlight');
-                }
-            });
-
-            mediumNames2.forEach((name, index) => {
-                if (mediumNames1.indexOf(name) === -1) {
-                    document.querySelector(`#medium-alerts-report2 li:nth-child(${index + 1})`).classList.add('highlight');
-                }
-            });
-        };
-
-        const openPopup = () => {
-            document.getElementById('comparePopUp').style.display = 'flex';
-              const body = document.querySelector('body');
-    
-    // Apply blur effect to the body
-    body.classList.add('blur');
-            compareReports();
-        };
-
-        const closePopup = () => {
-            document.getElementById('comparePopUp').style.display = 'none';
-              const body = document.querySelector('body');
-    
-    // Apply blur effect to the body
-    body.classList.remove('blur');
-        };
-    document.getElementById('comparebutton').addEventListener('click', () => {
     // Get all checkboxes
     const checkboxes = document.querySelectorAll('table tbody input[type="checkbox"]');
     
@@ -459,6 +455,273 @@ const reportData1 = {
         alert(`No\nChecked Count: ${checkedCount}\nValues: ${checkedValues}`);
     }
 });
+//////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     </script>
+<style>
+
+     button.test-btn {
+    margin-left: 10px;
+    padding: 1rem;
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button.test-btn:hover {
+    background-color: #d68910;
+  }
+
+  /* Align Submit and Test Connection Buttons */
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .status-message {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+    color: #333;
+  }
+
+  /* Form styling */
+  .form-container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 100%;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    flex: 1; /* Allows the form groups to share space evenly */
+  }
+
+  label {
+    display: block;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+
+  input {
+    width: 100%; /* Makes the input take up all available space */
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  input:focus {
+    border-color: #3498db;
+  }
+
+  button.submit-btn {
+    width: 50%;
+    padding: 1rem;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button.submit-btn:hover {
+    background-color: #2980b9;
+  }
+
+  /* Style for the tabs container */
+  .tabs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .tab-titles {
+    display: flex;
+    gap: 10px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    padding: 10px;
+  }
+
+  .tab-title {
+    padding: 10px;
+    font-size: 16px;
+    text-align: center;
+    background-color: #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+
+  .tab-title:hover {
+    background-color: #ccc;
+  }
+
+  img {
+   height: 44px;
+  width: 109px;
+  }
+
+  .tab-content {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-around;
+    box-sizing: border-box;
+  }
+
+  .content {
+    display: none;
+    width: 100%;
+  }
+
+  /* Hide radio buttons */
+  input[type="radio"] {
+    display: none;
+  }
+
+  /* Show content for the selected tab */
+  input#tab1:checked ~ .tab-content #content1,
+  input#tab2:checked ~ .tab-content #content2 {
+    display: block;
+  }
+
+  /* Active tab style */
+  input#tab1:checked ~ .tab-titles label[for="tab1"],
+  input#tab2:checked ~ .tab-titles label[for="tab2"] {
+    background-color: #10bbbb;
+    color: white;
+  }
+
+  input#tab1:checked ~ .tab-titles label[for="tab1"]:hover,
+  input#tab2:checked ~ .tab-titles label[for="tab2"]:hover {
+    background-color: #10bbbb;
+  }
+
+
+
+
+/*ticket popup css */ 
+
+/* Popup Container */
+/* Form group container */
+.form-group {
+    display: flex; /* Use flexbox for horizontal alignment */
+    gap: 20px; /* Space between label-select pairs */
+    align-items: center; /* Vertically align items */
+}
+
+/* Styling for label and select pairs */
+.form-group label {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 600;
+    white-space: nowrap; /* Prevent text from wrapping */
+}
+
+.form-group select {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+.summary {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+/* Add spacing between labels and selects */
+.form-group label + select {
+    margin-left: 10px;
+}
+
+/* Hover and focus effects for select */
+.form-group select:hover {
+    border-color: #007bff;
+}
+
+.form-group select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .form-group {
+        flex-direction: column; /* Stack items vertically */
+        gap: 10px; /* Reduce gap */
+    }
+
+    .form-group label + select {
+        margin-left: 0; /* Remove horizontal margin */
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</style>

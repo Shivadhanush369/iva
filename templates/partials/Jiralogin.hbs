@@ -1,4 +1,8 @@
+<div class="notification">
+       
+     </div>
 <body>
+  
   <h1>Jira</h1>
   <div class="tabs">
     <!-- Radio buttons for tab switching -->
@@ -30,32 +34,27 @@
                 <label for="jiraUsername">Jira Username</label>
                 <input type="text" id="jiraUsername" name="jiraUsername" placeholder="Enter Jira username" required>
               </div>
-
               <div class="form-group">
                 <label for="jiraToken">Jira Token</label>
                 <input type="password" id="jiraToken" name="jiraToken" placeholder="Enter Jira token" required>
               </div>
             </div>
-
             <div class="form-row">
               <div class="form-group">
                 <label for="jiraUrl">Jira URL</label>
                 <input type="text" id="jiraUrl" name="jiraUrl" placeholder="Enter Jira URL" required>
               </div>
-
               <div class="form-group">
                 <label for="projectKey">Project Key</label>
-                <input type="text" id="projectKey" name="projectKey" placeholder="Enter Jira project key" readonly>
+                <input type="text" id="projectKey" name="projectKey" placeholder="Enter Jira project key" >
               </div>
             </div>
-
             <div class="form-row">
               <div class="form-group">
                 <label for="organizationName">Organization Name</label>
                 <input type="text" id="organizationName" name="organizationName" placeholder="Enter your organization name" readonly>
               </div>
             </div>
-
             <div class="form-actions">
               <button type="submit" id="submitjiradata"class="submit-btn">Submit</button>
                <div id="submitStatus" class="status-message"></div>
@@ -67,7 +66,7 @@
       </div>
       <div class="content" id="content2">
         <h2>This feature is under development. Please check back soon.</h2>
-        
+      
       </div>
     </div>
   </div>
@@ -246,6 +245,8 @@
 </style>
 
 <script>
+  let notifications = document.querySelector('.notification');
+
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('jwtToken');
     const username = localStorage.getItem('username');
@@ -298,12 +299,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                connectionStatus.textContent = "Connection successful!";
-                connectionStatus.style.color = "green";
+               connectionStatus.textContent = "";
+                let type = 'success';
+let icon = 'fa-solid fa-circle-check';
+let title = 'Success';
+let text = 'Connection successful!';
+createToast(type, icon, title, text);
+               
             } else {
-                const error = await response.json();
-                connectionStatus.textContent = error.message || "Connection failed!";
-                connectionStatus.style.color = "red";
+            connectionStatus.textContent = "";
+        let type = 'error';
+        let icon = 'fa-solid fa-xmark';
+        let title = 'Failed';
+        let text = 'Connection failed!';
+        createToast(type, icon, title, text);
             }
         } catch (error) {
             connectionStatus.textContent = "Connection failed!";
@@ -353,18 +362,46 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                submitStatus.textContent = "Data submitted successfully!";
-                submitStatus.style.color = "green";
+                               submitStatus.textContent = "";
+            let type = 'success';
+let icon = 'fa-solid fa-circle-check';
+let title = 'Success';
+let text = 'Data submitted successfully!';
+createToast(type, icon, title, text);
             } else {
+                                             submitStatus.textContent = "";
+
                 const error = await response.json();
-                submitStatus.textContent = error.message || "Submission failed!";
-                submitStatus.style.color = "red";
+                   let type = 'error';
+        let icon = 'fa-solid fa-xmark';
+        let title = 'Failed';
+        let text = 'Submission failed!';
+        createToast(type, icon, title, text);
             }
         } catch (error) {
+          
             submitStatus.textContent = "Submission failed!";
             submitStatus.style.color = "red";
         }
     });
 });
 
+
+function createToast(type, icon, title, text){
+    let newToast = document.createElement('div');
+    
+    newToast.innerHTML = `
+        <div class="toast ${type}">
+            <i class="${icon}"></i>
+            <div class="contents">
+                <div class="title">${title}</div>
+                <span>${text}</span>
+            </div>
+            <i class="fa-solid fa-xmark" onclick="(this.parentElement).remove()"></i>
+        </div>`;
+    notifications.appendChild(newToast);
+    newToast.timeOut = setTimeout(
+        ()=>newToast.remove(), 5000
+    )
+}
 </script>

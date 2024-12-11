@@ -1,3 +1,6 @@
+
+let notifications = document.querySelector('.notification');
+
 document.addEventListener('DOMContentLoaded', async (event) => {
     const token = localStorage.getItem('jwtToken'); // Retrieve the token from local storage
 
@@ -80,13 +83,22 @@ document.getElementById('settingsForm').addEventListener('submit', function(even
     .then(data => {
         
         console.log('Success:', data);
-        alert('Form submitted successfully!');
+        let type = 'success';
+let icon = 'fa-solid fa-circle-check';
+let title = 'Success';
+let text = 'Submitted Successfully';
+createToast(type, icon, title, text);
+
     })
     .catch(error => {
         
         
         console.error('Error:', error);
-        alert('There was an error submitting the form.');
+        let type = 'error';
+        let icon = 'fa-solid fa-xmark';
+        let title = 'Failed';
+        let text = 'Subbmission failed.';
+        createToast(type, icon, title, text);
     });
 });
 
@@ -98,4 +110,22 @@ function toggleCustomInput() {
     } else {
         customScopeInput.style.display = 'none';
     }
+}
+
+
+function createToast(type, icon, title, text){
+    let newToast = document.createElement('div');
+    newToast.innerHTML = `
+        <div class="toast ${type}">
+            <i class="${icon}"></i>
+            <div class="content">
+                <div class="title">${title}</div>
+                <span>${text}</span>
+            </div>
+            <i class="fa-solid fa-xmark" onclick="(this.parentElement).remove()"></i>
+        </div>`;
+    notifications.appendChild(newToast);
+    newToast.timeOut = setTimeout(
+        ()=>newToast.remove(), 5000
+    )
 }

@@ -3,7 +3,7 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const { URL } = require('url');
 const ZAP_HOST = 'http://localhost:8080'; // Change this to your ZAP host
-const API_KEY = 'm54cpsd8nr7elj7q6mdtei1rfd';
+const API_KEY = 'sf1l9d7pvavoh4qfbkkvrh14h3';
 const History = require('../models/History');
 const Report = require('../models/Report');
 const asidealerts = require('../models/asidealert');
@@ -110,7 +110,7 @@ async function generateReportforManualScan(url, sockets,scanid,username) {
         const vulnerability = vulnerabilities.alertsSummary;
         const detailes = await getAlertsByRisk(3,url);
         const filteredAlerts = await categorizeAlertsByRisk(detailes);
-     const history = new History({ username,url, date: new Date() ,vulnerability,filteredAlerts,scanid});
+     const history = new History({ username,url, date: new Date() ,vulnerability,filteredAlerts});
         await history.save();
    const medium = filteredAlerts.medium.length;
    const high = filteredAlerts.high.length;
@@ -173,8 +173,13 @@ async function generateReport(Url,scanid) {
         const username = Url.username;
         const vulnerability = vulnerabilities.alertsSummary;
         const detailes = await getAlertsByRisk(3,url);
-     const filteredAlerts = await categorizeAlertsByRisk(detailes);
-     const history = new History({ username,url, date: new Date() ,vulnerability,filteredAlerts,scanid});
+
+     let filteredalerts = await categorizeAlertsByRisk(detailes);
+     const filteredAlerts = await predictFalsePositive(filteredalerts);
+     console.log(JSON.stringify(filteredAlerts))
+     console.log("super done")
+
+     const history = new History({ username,url, date: new Date() ,vulnerability,filteredAlerts});
         await history.save();
    const medium = filteredAlerts.medium.length;
    const high = filteredAlerts.high.length;
@@ -187,6 +192,93 @@ async function generateReport(Url,scanid) {
         throw new Error(`Failed to generate JSON report: ${error}`);
     }
 }
+
+
+async function predictFalsePositive(alerts){
+
+    const selectedData = { data: [] };
+    Object.keys(alerts).forEach(key => {
+        
+        const keysdata =  alerts[key];
+        keysdata.forEach(vuln => {
+            
+
+            
+                const rowData = {
+                   
+                    Alert: vuln.name || "",
+Description: vuln.description || "",
+URL: vuln.url || "",
+Parameter: vuln.param || "",
+Attack: vuln.attack || "",
+Evidence: vuln.evidence || "",
+sourceid: parseInt(vuln.sourceid, 10) || -1,
+  cweid: parseInt(vuln.cweid, 10) || -1,
+  wascid: parseInt(vuln.wascid, 10) || -1,
+  alertRef: parseInt(vuln.alertRef, 10) || -1
+
+                };
+                selectedData.data.push(rowData);
+                           
+        });
+    });
+
+
+    try {
+        // Make an API call using fetch
+        const response = await fetch('http://127.0.0.1:5001/predict', {
+            method: 'POST',                       // HTTP method
+            headers: {
+                'Content-Type': 'application/json' // Specify JSON content
+            },
+            body: JSON.stringify(selectedData)         // Convert payload to JSON string
+        });
+
+        // Check if the response is successful
+        if (response.ok) {
+            
+            const responseData = await response.json();
+           const result = await predictionDataIntoDb(responseData,alerts)
+            console.log("Response from server:", responseData);
+            console.log("False positive data successfully submitted!");
+            console.log(JSON.stringify(result))
+            console.log("now done ")
+            return result;
+        } else {
+            console.log("Failed to submit false positive data:", response.statusText);
+            console.log("Error submitting false positive data.");
+        }
+    } catch (error) {
+        console.error("Error during API call:", error);
+        alert("An error occurred while submitting false positive data.");
+    }
+
+
+}
+
+
+
+async function predictionDataIntoDb(responseData, alerts) {
+    // Create a new object to store the modified alerts
+    let modifiedAlerts = JSON.parse(JSON.stringify(alerts)); // Deep copy of the alerts
+
+    Object.keys(modifiedAlerts).forEach((key, index) => {
+        const keysdata = modifiedAlerts[key];
+        keysdata.forEach((vuln, vulnIndex) => {
+            // Modify the prediction value based on responseData
+            if (responseData[vulnIndex]) {
+                vuln.prediction = "true";
+            } else {
+                vuln.prediction = "false";
+            }
+            console.log(vuln); // Log the modified vuln object for debugging
+        });
+    });
+
+    // Return the modified alerts
+    return modifiedAlerts;
+}
+
 async function start(targetUrl) {
     try {
         console.log(`Starting spider for URL: ${targetUrl.url}`);

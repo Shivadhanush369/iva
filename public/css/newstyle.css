@@ -1023,3 +1023,172 @@ input[type="radio"] {
         }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+     
+  a[title] {
+    position: relative;
+    text-decoration: none;
+  }
+
+  a[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    z-index: 1;
+  }
+
+       /* Toggle Switch Styling */
+       /* Wrapper for the toggle button */
+.toggle-btn-wrapper {
+  position: relative;
+  width: 200px; /* Total width of the toggle */
+  height: 30px; /* Height of the toggle */
+}
+
+
+.false-positive {
+ 
+  
+  border: 2px solid #44b821; /* Red border to indicate importance */
+  background-color: transparent;
+  color: #44b821; /* Matches the border color */
+ 
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 4px; /* Slight rounding of the corners */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 10%;
+}
+
+.false-positive:hover {
+  background-color: #44b821; /* Fills with red on hover */
+  color: #fff; /* Text color becomes white */
+}
+/* Ball inside the toggle */
+.toggle-ball {
+  width: 26px;  /* Size of the ball */
+  height: 26px; /* Size of the ball */
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;      /* Align ball vertically */
+  left: 2px;     /* Align ball to the left */
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out; /* Smooth transitions */
+}
+
+/* Button styling for the toggle */
+.toggle-btn {
+ 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  background-color: #ccc; /* Default background */
+  border-radius: 50px;
+  position: relative;
+  cursor: pointer;
+  padding: 2px;
+  border: none;
+  outline: none;
+  transition: background-color 0.3s ease-in-out; /* Smooth background transition */
+}
+
+/* Active state (when clicked) */
+.toggle-btn.active {
+  background-color: #4CAF50;  /* Green when toggled */
+}
+
+/* Move the ball to the right when active */
+.toggle-btn.active .toggle-ball {
+  transform: translateX(65px);  /* Move ball to the right */
+}
+
+/* Optional: Add text for the ticket creation label when active */
+.toggle-btn.active::after {
+ 
+  position: absolute;
+  left: 10px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+   /* ticket popup */
+
+   /* Popup styling */
+/* Popup styling */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+
+.toggle-btn .toggle-content {
+  display: flex;
+  white-space: nowrap;
+  
+}
+
+.popup.hidden {
+  display: none;
+}
+
+.popup-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 1000px;
+  text-align: left;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Close button styling */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ff5f57;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.close-btn:hover {
+  background-color: #ff3d3d;
+}

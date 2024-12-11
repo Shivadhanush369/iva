@@ -5,7 +5,7 @@ const express = require("express");
 const axios = require('axios');
 const socketIo = require('socket.io');
 const Jiraticket =  require('./models/Jiraticket');
-
+const Ticketbody = require('./request/Ticketbody');
 const http = require('http');
 const scan = require("./commons/scan");
 const path = require("path");
@@ -21,6 +21,7 @@ const Register = require('./models/Register');
 const oneweek = require('./models/oneweek');
 const onemonth = require('./models/onemonth');
 const Report = require('./models/Report');
+
 const oneday = require('./models/oneday');
 const subscribe = require('./models/subscribe');
 const secretKey = "secretKey";
@@ -222,7 +223,46 @@ app.get('/scopes', verifyToken, async (req, res) => {
     }
 });
 
+app.post("/listvulnerability", verifyToken,async (req, res) => {
 
+    const { name } = req.authData; 
+    
+    
+    const date =[];
+    const medium = [];
+    const high =[];
+    const low =[];
+    let alertCount=0;
+    let m=0;
+   
+    let alertname = new Set();
+    let url = req.body.url;
+
+    try {
+        const histories = await Report.find({ 'report.url.username': name, 'report.url.url': url }).select('-_id');
+        histories.forEach(history => {
+            history.report.site.forEach(site =>{
+                site.alerts.forEach(alert =>{
+                    if((site.alerts).length != 0)
+                    {
+                        
+                    alertname.add(alert.name);
+                    }
+                });
+             
+               
+            })
+            console.log(alertname);
+        
+        });
+        
+        res.json({ alertname: Array.from(alertname) });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch data' });
+    }
+    
+});
 
 app.post("/settingsb", verifyToken, async (req, res) => {
     console.log("Request Body:", req.body); // Log the request body
@@ -280,7 +320,141 @@ app.post("/settingsb", verifyToken, async (req, res) => {
         }
     } 
 });
+app.get("/getAsignee", verifyToken,async (req, res) => {
 
+    const { name } = req.authData; 
+        const jiracred = await Jiraticket.find({ orgname: name}).select('-_id');
+        console.log("here");
+              
+        const username = jiracred[0].jirausername;
+        const token = jiracred[0].jiratoken;
+        const projectkey = jiracred[0].projectKey;
+        const asigneesurl = jiracred[0].jiraurl;
+        const jiramainurl = asigneesurl +"rest/api/3/user/assignable/search?project="+projectkey;
+console.log(jiramainurl);
+        const auth = 'Basic ' + Buffer.from(`${username}:${token}`).toString('base64');
+
+
+try {
+    const response = await axios.get(jiramainurl,{
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': auth // Set the Authorization header
+        }
+    });
+    const data = response.data;
+    return res.status(202).json({ data }); // Send JSON response with 201 status
+
+
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to create ticket', details: error.response.data });
+}
+   
+
+});
+
+
+
+
+app.post("/raiseticket", verifyToken,async (req, res) => {
+
+    const {  vulurl,vulname} = req.body;
+    const { name ,url } = req.authData;
+  console.log("jjjk"+url);
+    
+    const summary = req.body.summary;
+    const description = req.body.description;
+    const issuetype = req.body.issuetype;
+    const assignee =  req.body.assignee;
+    const scanid = req.body.scanid;
+        const jiracred = await Jiraticket.find({ orgname: name}).select('-_id');
+        console.log("here");
+              
+        const username = jiracred[0].jirausername;
+        const token = jiracred[0].jiratoken;
+        const projectKey = jiracred[0].projectKey;
+        const asigneesurl = jiracred[0].jiraurl;
+        const jiramainurl = asigneesurl +"rest/api/3/issue";
+        console.log(jiramainurl);
+     
+    
+    // Encode username and password
+    const auth = 'Basic ' + Buffer.from(`${username}:${token}`).toString('base64');
+    
+    const body = new Ticketbody(projectKey, summary, description, issuetype, assignee);
+    
+    
+    try {
+        const response = await axios.post(jiramainurl, body, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': auth // Set the Authorization header
+            }
+        });
+        console.log(response.status);
+
+            if (response.status >= 200 && response.status < 300) {
+            console.log(response.status);
+
+                const histories = await History.find({ username: name, scanid: scanid});
+console.log(JSON.stringify(histories));
+                histories.forEach(  histories   => {
+                    console.log("in");
+                    // Check if filteredAlerts exists
+                    if (histories.filteredAlerts) {
+                        console.log("in2");
+                        const keys = Object.keys(histories.filteredAlerts);
+                    
+                        console.log("Keys in filteredAlerts:", keys);
+                        const array = ['high','medium','low'];
+                        // Loop through only valid keys of filteredAlerts
+                        array.forEach(key => {
+                                console.log("in3");
+
+                                // Get the alerts for the current key
+                                const alerts = histories.filteredAlerts[key];
+                
+                                // Ensure alerts is an array before proceeding
+                                if (Array.isArray(alerts)) {
+                                    alerts.forEach(vuln => {
+                                        
+                                        
+                                    
+                                        if ((vuln.name.toLowerCase() === vulname.toLowerCase()) &&
+                                            (vuln.url.toLowerCase() === vulurl.toLowerCase())) {
+                
+                                            // Add the ticketstatus key-value pair
+                                            vuln.ticketstatus = "true";
+                                            console.log("vuln after modification:", vuln);
+                                            console.log("found it ");
+                                        }
+                                    });
+                                } else {
+                                    console.warn(`FilteredAlerts[${key}] is not an array:`);
+                                }
+                            });
+                             
+                           new History(histories).save();
+
+                    }
+                });
+                
+
+
+            }
+        return res.status(201).json({ message: 'Ticket created successfully' }); // Send JSON response with 201 status
+    
+        
+    
+    
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to create ticket', details: error.response.data });
+    }
+    
+
+});
 
 
 app.get("/dashboard.html",(req, res) => {
@@ -296,6 +470,10 @@ app.get("/history.html",(req, res) => {
 
 app.get("/settings",(req, res) => {
     res.render("settings");
+});
+
+app.get("/makkerchekker",(req, res) => {
+    res.render("makerchekkermain");
 });
 
 app.post('/profile', verifyToken, (req, res) => {
@@ -812,12 +990,13 @@ app.post("/submit-jira-connection", verifyToken,async (req, res) => {
         const jiratoken = req.body.jiraToken;
         const jiraurl = req.body.jiraUrl;
         const orgname =  req.body.organizationName;
+        const projectKey = req.body.projectKey;
         
        
             const result = await Jiraticket.updateOne(
                 { orgname }, // Find document by orgname
                 {
-                    $set: { jirausername, jiratoken, jiraurl }, // Update the fields
+                    $set: { jirausername, jiratoken, jiraurl ,projectKey}, // Update the fields
                 },
                 { upsert: true } // If no matching document, create one
             );
