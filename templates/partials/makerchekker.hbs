@@ -44,12 +44,12 @@
                     
                 </select>
                  <label for="summary">vulnerability</label>
-
-            <select id="vulnerabilityscope" onchange="setTicketSummary()">
+<div class="dropdown-container">
+            <select id="vulnerabilityscope" class="form-control" onchange="setTicketSummary()">
                     <option value="" disabled selected>Select your scope</option>
                     
                 </select>
-       
+       </div>
         </div>
         
         <div class="form-group">
@@ -73,7 +73,7 @@
         </div>
 
         <div class="popup-buttons">
-            <button class="btn-close" onclick="ticketpopclose()">Close</button>
+            {{!-- <button class="btn-close" onclick="ticketpopclose()">Close</button> --}}
             <button class="ticket-submit" onclick="ticketsubmit()">Submit</button>
         </div>
  </div>
@@ -172,7 +172,7 @@
        <!-- end insights -->
          
       <div class="recent_order">
-        <button class="false-positive"> confirm False Positive</button>
+        {{!-- <button class="false-positive"> confirm False Positive</button> --}}
          <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 {{!-- <button class="btn btn-primary mr-2">New Scan</button>
@@ -183,6 +183,7 @@
                 <button class="btn btn-success">Export to</button> --}}
             </div>
             <div >
+              <div class="table-wrapper">
          <table class="table table-hover">
             <thead class="thead-light">
                 <tr>
@@ -232,6 +233,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
          <a href="#">Show All</a>
          
   {{!-- <h2>Vulnerability Analysis - Quadrant View</h2>
@@ -249,10 +251,11 @@
         </div>
     </div> --}}
 
+        <button class="false-positive"> confirm False Positive</button>
 
 <br><br>
 
-   
+
 
       </div>
 
@@ -712,13 +715,63 @@ document.querySelector('#modal button').addEventListener('click', closeModal);
 
 
 
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Ensure the popup content container is relative for absolute positioning */
+.popup-content {
+    position: relative; /* Ensures button is positioned relative to this container */
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width:960px;
+}
 
 
+/* Close button */
+.close-btn {
+    background-color: #f44336;  /* Red color for button */
+    color: white;               /* White text */
+    font-size: 16px;            /* Font size */
+    border: none;               /* No border */
+    border-radius: 11%;         /* Circular button */
+    padding: 10px 16px;              /* Padding inside the button */
+    position: absolute;         /* Position it inside the popup */
+    top: 10px;                  /* Place it 10px from the top */
+    right: 30px;                /* Move it 20px from the right (adjusted) */
+    cursor: pointer;           /* Pointer cursor on hover */
+    transition: background-color 0.3s;  /* Smooth transition for hover */
+    z-index: 10;                /* Ensure the button is on top of other content */
+}
 
 
+#vulnerabilityscope{
+    width:30%;
+}
+
+.false-positive{
+    left-margin:150px;
+}
 
 
-
+/* Wrapper for the table */
+.table-wrapper {
+    max-height: 300px;  /* Set a fixed height for the table body */
+    overflow-y: auto;   /* Enable vertical scrolling when content overflows */
+}
 
 
 

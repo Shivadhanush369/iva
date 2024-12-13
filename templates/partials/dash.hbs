@@ -127,6 +127,19 @@ barcode_scanner
                 <button id="comparebutton"class="btn btn-info mr-2">Compare Scans</button>
                 <button class="btn btn-success">Export to</button> --}}
             </div>
+
+  <div class="cards">
+    <div class="card" style="flex: 1; width: 50%;"> <!-- First card taking more space -->
+        <h2>Vulnerability Analysis</h2>
+        <div id="containerFetch" style="width: 100%; height: 400px;"></div> <!-- Chart Container -->
+    </div>
+    <div class="card" style="flex: 1; width: 50%;"> <!-- Second card taking less space -->
+        <h2>Trend Analysis</h2>
+        <div id="containerVuln" style="width: 100%; height: 400px;"></div> <!-- Chart Container -->
+    </div>
+</div>
+<br><br>
+
             <div >
          <table class="table table-hover">
             <thead class="thead-light">
@@ -194,16 +207,7 @@ barcode_scanner
         </div>
     </div> --}}
 
-  <div class="cards">
-    <div class="card" style="flex: 1; width: 50%;"> <!-- First card taking more space -->
-        <h2>Vulnerability Analysis</h2>
-        <div id="containerFetch" style="width: 100%; height: 400px;"></div> <!-- Chart Container -->
-    </div>
-    <div class="card" style="flex: 1; width: 50%;"> <!-- Second card taking less space -->
-        <h2>Trend Analysis</h2>
-        <div id="containerVuln" style="width: 100%; height: 400px;"></div> <!-- Chart Container -->
-    </div>
-</div>
+
 <br><br>
 
    
@@ -462,3 +466,11 @@ const reportData1 = {
 
 
     </script>
+
+    <style>
+                /* Wrapper for the table */
+.table-wrapper {
+    max-height: 300px;  /* Set a fixed height for the table body */
+    overflow-y: auto;   /* Enable vertical scrolling when content overflows */
+}
+    </style>

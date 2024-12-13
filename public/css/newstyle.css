@@ -186,11 +186,11 @@ b{
   
  }
 
- aside .sidebar a:last-child{
+ /* aside .sidebar a:last-child{
   position: absolute;
   bottom: 1rem; 
   width: 100%;
- }
+ } */
 
  aside .sidebar a.active{
    background-color: var(--clr-light);

@@ -644,7 +644,7 @@ setInterval(() => {
     console.log('Clearing cache');
     cache.flushAll();
 }, 300000);
-server.listen(5004, () => {
+server.listen(5001, () => {
     console.log(`Server is running on port `);
 });
 
