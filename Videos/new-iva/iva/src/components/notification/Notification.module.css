@@ -1,0 +1,48 @@
+.notification_wrapper{
+    border-radius:5px;
+    height:215px;
+    width:100%;
+    background-color: rgb(255, 255, 255);
+    margin-top:30px;
+    margin-right: 10px;
+   
+    box-shadow: 5px 10px 15px 0px rgba(0, 0, 0, 0.2);
+
+}
+.notification{
+    display: flex;
+    gap:5px;
+    width:100%;
+    height:50px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 30px;
+    margin-top:10px;
+    
+}
+.notificationtitle{
+    font-size: 15px;
+    font-weight: bold;
+    color: #333333; /* Dark Gray */
+}
+.notificationrecent{
+    font-size: 14px;
+    color: #7D7F7D; /* Muted green-gray (Musk-inspired) */
+    font-weight: normal;
+    font-weight: bold;
+}
+.title{
+    font-size: 15px;
+    font: bold 15px 'Poppins', sans-serif;
+    margin-left:15px;
+    margin-top:8px;
+    
+    
+}
+.noticontent {
+    font-size: 12px;
+}
+.notification img{
+    height:40px;
+    margin-left:10px;
+    margin-top:5px;
+}

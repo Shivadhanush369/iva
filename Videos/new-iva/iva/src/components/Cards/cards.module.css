@@ -1,0 +1,44 @@
+
+.card{
+    background-color: #ffffff;
+    box-shadow: 0px 4px 8px rgb(0,0,0,0.5);
+border-radius: 5%;
+display: flex;
+padding:10px;
+width:250px;
+height:150px;
+align-items: center;
+}
+ .card img {
+    width:50px;
+   height: 50px;
+    object-fit:cover;
+
+ }
+
+ .icon{
+
+   display: flex;
+  
+  justify-content: center;
+  
+  
+   
+ }
+
+ .card_content{
+    padding:0 20px;
+
+ }
+ .card_content h3{
+    font-size: 18px;
+    margin-bottom:10px;
+    color:black;
+ }
+ .card-content p{
+    font-size: 18px;
+    line-height:1.4;
+
+ }
+
+ 
