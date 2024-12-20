@@ -21,7 +21,7 @@ const Register = require('./models/Register');
 const oneweek = require('./models/oneweek');
 const onemonth = require('./models/onemonth');
 const Report = require('./models/Report');
-
+const cors = require("cors");
 const oneday = require('./models/oneday');
 const subscribe = require('./models/subscribe');
 const secretKey = "secretKey";
@@ -36,7 +36,10 @@ const cache = new NodeCache({ stdTTL: 300, checkperiod: 60 }); // Cache for 5 mi
 
 
 const partials_path = path.join(__dirname, "../templates/partials");
- 
+app.use(cors({
+    origin: "http://localhost:5173", // Replace with your frontend's origin
+    methods: ["GET", "POST"],       // List allowed HTTP methods
+}));
 let sockets = [];
 console.log();
 app.use(express.json());
@@ -208,10 +211,11 @@ app.get('/scopes', verifyToken, async (req, res) => {
     const { name } = req.authData;
     try {
         const scopes = await subscribe.find({ username: name });
-
+console.log("resssssssssssssssssssssssponse")
+console.log(scopes)
         // Extract URL and derive the domain name
-        const formattedScopes = scopes.map(scope => {
-            const url = scope.scope;
+        const formattedScopes = scopes.map(op => {
+            const url = op.scope;
             const domainName = new URL(url).hostname;
 
             return { url, name: domainName };
@@ -219,6 +223,8 @@ app.get('/scopes', verifyToken, async (req, res) => {
 
         res.json(formattedScopes);
     } catch (error) {
+        console.log("errrrrrrrrrrrrrrrrrrrrrrrrrrrror");
+        console.log(error.message);
         res.status(500).send(error.message);
     }
 });
@@ -265,13 +271,8 @@ app.post("/listvulnerability", verifyToken,async (req, res) => {
 });
 
 app.post("/settingsb", verifyToken, async (req, res) => {
-    console.log("Request Body:", req.body); // Log the request body
-
+    console.log("Request Body:", req.body);
     const { username, scope, cvssScore, scheduleTime } = req.body;
-
-    
-
-
     if (!username || !scope || !cvssScore || !scheduleTime) {
         return res.status(400).json({ error: 'All fields are required' });
     }
@@ -283,7 +284,6 @@ app.post("/settingsb", verifyToken, async (req, res) => {
         try {
             const update = { username, cvssScore, scheduleTime };
             const options = { upsert: true, new: true, setDefaultsOnInsert: true };
-
             const newUser = await oneweek.findOneAndUpdate({ scope }, update, options);
             res.json({ message: 'Data received and saved successfully', data: newUser });
         } catch (error) {
@@ -644,7 +644,7 @@ setInterval(() => {
     console.log('Clearing cache');
     cache.flushAll();
 }, 300000);
-server.listen(5001, () => {
+server.listen(5004, () => {
     console.log(`Server is running on port `);
 });
 
@@ -681,7 +681,7 @@ app.get('/partials/:name', (req, res) => {
 app.post('/alerts', verifyToken,async (req, res) => {
     const { name } = req.authData;  
    
-    let url =req.body.url;
+    
     try {
         const alerts = await asidealert.find({ 'username': name })
     .sort({ _id: -1 }) // Sort by _id in descending order (latest first)

@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
         });
 
         if (!response.ok) {
+            alert("hello");
             throw new Error('Network response was not ok');
         }
 
