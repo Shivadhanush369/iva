@@ -1,4 +1,4 @@
-
+ 
 import Cards from "../components/Cards/Cards";
 import Selects from "../components/select/Selects";
 import styles from "./Dashboard.module.css";
@@ -8,6 +8,7 @@ import { useEffect,useState } from "react";
 import Notification from "../components/notification/Notification";
 import Quadrantchart from "../components/Highcharts/Quadrantchart";
 import LineChart from "../components/Highcharts/LineChart";
+import ExampleDBPedia from "../components/chatbot/ExampleDBPedia";
 const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState(0);
   const [cwe, setCwe] = useState(0);
@@ -306,9 +307,6 @@ console.log("notifydata "+ JSON.stringify(notificationData))
 };
 fetchlinechartdata()
 
-
-
-
   };
 
   useEffect(() => {
@@ -395,7 +393,7 @@ return (
     </div>
     <div className={styles.middlediv}>
       <div className={styles.cards_container}>
-        <Cards icon={<img src="../../public/bullish.png" alt="bullish" />} title="CWE" value={cwe} />
+        <Cards icon={<img src="/public/bullish.png" alt="bullish" />} title="CWE" value={cwe} />
         <Cards icon={<img src="../../public/scan.png" alt="scan" />} title="Total Scans" value={totoalScanned} />
         <Cards icon={<img src="../../public/warning.png" alt="warning" />} title="Total Alerts" value={totalAlerts} />
         
@@ -426,6 +424,7 @@ return (
   <div className={styles.datatables}>
   <DataTable columns={columns} data={tabaleData} customStyles={tableStyle} />
 </div>
+<ExampleDBPedia/>
 </div>
 
 );

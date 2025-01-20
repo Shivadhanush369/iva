@@ -1,6 +1,7 @@
 .jira_wrapper{
     display: flex;
     flex-direction: column;
+  
 }
 .jira_header{
     border-bottom: 1px solid black;
@@ -8,6 +9,10 @@
     font-size: 22px;
     padding:10px;
 
+}
+
+.jira_body{
+    gap:20px;
 }
 .firstrow{
     display: flex;

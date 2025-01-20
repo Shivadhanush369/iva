@@ -10,10 +10,10 @@ import TopNavbar from './Navbar/TopNavbar';
 
 const routes = [
   { path: '/overview', name: 'Overview', icon: <FaHome /> },
-  { path: '/user', name: 'Manual Scan', icon: <FaUser /> },
+  { path: '/manualscan', name: 'Manual Scan', icon: <FaUser /> },
   { path: '/analytics', name: 'Analytics', icon: <BiAnalyse /> },
   { path: '/configuration', name: 'Configuration', icon: <AiTwotoneFileExclamation /> },
-  { path: '/order', name: 'Make Checker', icon: <BsCartCheck /> },
+  { path: '/makechecker', name: 'Make Checker', icon: <BsCartCheck /> },
   { path: '/settings', name: 'Settings', icon: <BiCog /> },
   { path: '/saved', name: 'Saved', icon: <AiFillHeart /> },
 ];

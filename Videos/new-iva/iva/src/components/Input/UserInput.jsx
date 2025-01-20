@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Input.module.css';
 
-const Input = ({placeholder,width,onInuptValue}) => {
+const UserInput = ({placeholder,width,onInuptValue}) => {
   const [isFocused, setIsFocused] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
@@ -22,6 +22,7 @@ const Input = ({placeholder,width,onInuptValue}) => {
           onChange={handleChange}
           required
           className={styles.input}
+          
         />
         <label
           className={`${styles.label} ${isFocused || inputValue ? styles.labelActive : ''}`}
@@ -33,4 +34,4 @@ const Input = ({placeholder,width,onInuptValue}) => {
   );
 }
 
-export default Input;
+export default UserInput;

@@ -1,0 +1,14 @@
+.scan{
+
+    
+    background-color: white;
+    width:900px;
+    border-radius: 5px;
+   
+}
+.scanheader{
+    padding:20px;
+}
+.scanbody{
+ padding-left:30px;
+}

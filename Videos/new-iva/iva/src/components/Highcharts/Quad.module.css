@@ -1,0 +1,12 @@
+.nodata{
+    min-width: 250px;
+    max-width: 500px;
+    width:100%;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    
+    
+    height: 100%;
+}

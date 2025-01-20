@@ -5,7 +5,8 @@
 
 .entryarea {
   position: relative;
-  height: 80px;
+  height: fit-content;
+ 
 }
 
 .input {
@@ -25,12 +26,12 @@
   
   position: absolute;
   left: 25px;
-  top: 30%; /* Initially vertically centered inside the input */
+  top: 50%; /* Initially vertically centered inside the input */
   font-size: 1em;
   color: #000000;
   background-color: #ffffff;
   
-  padding: 0 5px;
+  padding: 5px;
   transform: translateY(-50%);
   transition: 0.3s ease;
   pointer-events: none;

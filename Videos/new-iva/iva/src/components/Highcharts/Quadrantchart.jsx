@@ -10,7 +10,7 @@ const Quadrantchart = ({ data }) => {
     
   // Ensure alertsMap and processedData are computed only when data is available
   if (!data || Object.keys(data).length === 0) {
-    return <div>Loading or No Data Available</div>;
+    return <div className={styles.nodata}>No Data Available</div>;
   }
 
   const alertsMap = {
@@ -144,9 +144,27 @@ const Quadrantchart = ({ data }) => {
           },
         },
         colorByPoint: true, // Automatically apply colors based on the data
-      },
-      
-    ],
+      }, {
+        name: 'High Vulnerabilities',
+        color: 'red',
+        data: [], // No actual data points
+        visible: true // Start visible
+    }, {
+        name: 'Medium Vulnerabilities',
+        color: 'orange',
+        data: [], // No actual data points
+        visible: true // Start visible
+    }, {
+        name: 'Low Vulnerabilities',
+        color: 'yellow',
+        data: [], // No actual data points
+        visible: true // Start visible
+    }, {
+        name: 'Informational Vulnerabilities',
+        color: 'blue',
+        data: [], // No actual data points
+        visible: true // Start visible
+    }],
     plotOptions: {
       bubble: {
         minSize: 15,
@@ -187,10 +205,11 @@ const Quadrantchart = ({ data }) => {
     <div  style={{
       minWidth: '250px', // Set the minimum width (example)
         maxWidth: '500px',
+       
       width: '100%', // 100% width of parent
       transition: 'all 0.3s ease', // Smooth transition for resizing
     }}>
-      <HighchartsReact highcharts={Highcharts} options={options} />
+      <HighchartsReact highcharts={Highcharts} options={options}/>
     </div>
   );
 };
