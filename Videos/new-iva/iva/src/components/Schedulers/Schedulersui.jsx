@@ -14,8 +14,21 @@ import Stack from '@mui/material/Stack';
 import Selects from '../select/Selects';
 
 const Schedulersui = () => {
+
+
+
   const [loading, setLoading] = React.useState(false);
   const [options, setOptions] = React.useState(0);
+  const [toolSelection, setToolSelection] = React.useState([{
+    value: "Nessus",
+    label: "Nessus",
+  },
+{
+  value: "Zap",
+    label: "Zap",
+}
+]);
+const [toolselected, setToolselected] = React.useState("0");
   const [schedulescope, setScheduleScope] = React.useState("0");
   const [customScopeInput, setCustomScopeInput] = React.useState("0");
   const [cvssState, setCvssState] = React.useState("0");
@@ -32,6 +45,7 @@ const Schedulersui = () => {
    console.log("customScopeInput"+customScopeInput);
    console.log("cvssState"+cvssState);
    console.log("scheduledtimeHandle"+scheduledtimeHandle);
+   console.log("tool"+toolselected);
    const token = localStorage.getItem("jwtToken")
    if(schedulescope === '*'){
     
@@ -54,7 +68,8 @@ if (!scope.endsWith('/')) {
     username : username,
     scope: scope,
     cvssScore: cvssState,
-    scheduleTime: scheduledtimeHandle
+    scheduleTime: scheduledtimeHandle,
+    Tool:toolselected
 };
 
 if (!username || scope == "" || cvssState=="0" || scheduledtimeHandle =="0") {
@@ -129,6 +144,12 @@ setLoading(false);
   
   }
 
+  const handeltoolonchange =(selected)=>{
+    
+    setToolselected(selected.value);
+
+  }
+
   const coustomStyles ={
     control:(provided) =>({
       ...provided,
@@ -172,6 +193,8 @@ useEffect(()=>{
           value: item.url,
           label: item.name,
         }));
+
+      
        
         selectOptions.push({value:"*",label:"*"});
         setOptions(selectOptions);
@@ -202,7 +225,7 @@ const customScopeInputhandle = (e)=>
     </div>
     <div className={styles.jira_body}>
 <div className={styles.firstrow}>
-
+<Selects  placeholder="Select Tool" onChange={handeltoolonchange} styles={coustomStyles} option={toolSelection}/>
     <Selects  placeholder="Select your scope" onChange={handelfirstonchange} styles={coustomStyles} option={options}/>
     {schedulescope == "*" ? (<>
        <input onChange={(e)=> customScopeInputhandle(e)} placeholder="www.example.com"/>

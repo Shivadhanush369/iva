@@ -95,3 +95,8 @@
     background-color: #0056b3;
   }
   
+  .select{
+    display: flex;
+    flex-direction: row;
+    gap:10px; 
+  }

@@ -7,6 +7,8 @@ import HighchartsReact from 'highcharts-react-official';  // React wrapper for H
 
 const Quadrantchart = ({ data }) => {
    
+  console.log("QuadchartData "+ JSON.stringify(data));
+
     
   // Ensure alertsMap and processedData are computed only when data is available
   if (!data || Object.keys(data).length === 0) {
@@ -205,7 +207,7 @@ const Quadrantchart = ({ data }) => {
     <div  style={{
       minWidth: '250px', // Set the minimum width (example)
         maxWidth: '500px',
-       
+        border:'3px solid rgb(202, 200, 200)',
       width: '100%', // 100% width of parent
       transition: 'all 0.3s ease', // Smooth transition for resizing
     }}>

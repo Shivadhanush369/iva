@@ -1,0 +1,38 @@
+.shimmer {
+    background-color: #f6f7f8;
+    width: 900px;
+    border-radius: 5px;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.shimmerHeader {
+    height: 20px;
+    width: 60%;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f6f7f8 50%, #e0e0e0 75%);
+    background-size: 400% 100%;
+    animation: shimmerLoading 1.5s infinite;
+    margin-bottom: 10px;
+}
+
+.shimmerBody {
+    padding-left: 30px;
+}
+
+.shimmerLine {
+    height: 10px;
+    width: 80%;
+    background: linear-gradient(90deg, #e0e0e0 25%, #f6f7f8 50%, #e0e0e0 75%);
+    background-size: 400% 100%;
+    animation: shimmerLoading 1.5s infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes shimmerLoading {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}

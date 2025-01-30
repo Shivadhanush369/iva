@@ -2,6 +2,7 @@ import * as Highcharts from 'highcharts';  // Load the Highcharts core
 import 'highcharts/highcharts-more';  // Import the highcharts-more module (no need to call it as a function)
 import HighchartsReact from 'highcharts-react-official';
 const LineChart = ({ data }) => {
+  console.log("linechartData "+ JSON.stringify(data));
     const dates = data.dates; // Ensure this matches the response structure
     const totalAlerts = data.totalAlerts; 
   

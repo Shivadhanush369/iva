@@ -4,69 +4,53 @@ import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import toast from 'react-hot-toast';
 import UserInput from '../Input/UserInput';
-import styles from './JiraCom.module.css';
 import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 import Stack from '@mui/material/Stack';
+import styles from './Nessus.module.css';
 
-const JiraCom = () => {
+const Nessus = () => {
     const [loading, setLoading] = React.useState(false);
     const [cclocading,setCcloading] = React.useState(false);
-    const [jirausername,setJirausername]= React.useState("");
-    const [jiratoken,setJiraToken]= React.useState("");
-    const [jiraurl,setJiraUrl]= React.useState("");
-    const [jiraProjectKey,setJiraProjectKey]=React.useState("");
-    const [jiraOrganization,setJiraOrganization]=React.useState("");
+    const [NessusAccessToken,setNessusAccessToken]= React.useState("");
+    const [NessusSecretKey,setNessusSecretKey]= React.useState("");
+    const [NessusApiToken,setNessusApiToken]=React.useState("");
     
-    function handelJirausername(value){
+    function handelNessusAccessToken(value){
        
-        setJirausername(value);
+        setNessusAccessToken(value);
         
     }
 
-    function handelJiratoken(value){
+    function handelNessusSecretKey(value){
        
-        setJiraToken(value);
+        setNessusSecretKey(value);
         
     }
-    function handelJiraurl(value){
-       
-        setJiraUrl(value);
-        
-    }
-    function handelJiraproject(value){
-       
-        setJiraProjectKey(value);
-        
-    }
+
   
-    function handelJiraOrgname(value){
-        setJiraOrganization(value);
+    function handelNessusApiToken(value){
+        setNessusApiToken(value);
     }
     
     async function  handleClickCheckConnection(){
         setCcloading(true);
-        console.log("jirausername "+jirausername);
-        console.log("jiraurl "+jiraurl);
-        console.log("jiraProjectKey "+jiraProjectKey);
-        console.log("jiraOrganization "+jiraOrganization);
+       
         const token = localStorage.getItem('jwtToken');
 
         try {
-            const response = await fetch('http://localhost:5004/test-jira-connection', {
+            const response = await fetch('http://localhost:5004/test-nessus-connection', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    username: jirausername,
-                    jiraUsername: jirausername,
-                    jiraToken: jiratoken,
-                    jiraUrl: jiraurl,
-                    projectKey: jiraProjectKey,
-                    organizationName: jiraOrganization,
+                    AccessToken: NessusAccessToken,
+                    SecretKey: NessusSecretKey,
+                    ApiToken: NessusApiToken
+                    
                 }),
             });
 
@@ -92,28 +76,28 @@ const JiraCom = () => {
     }
     async function handleClick() {
       setLoading(true);
-      if ( jirausername === "" && jiratoken === "" && jiraurl === "" && jiraProjectKey === "" && jiraOrganization === ""){
+      if ( NessusAccessToken === "" && NessusSecretKey === "" && NessusApiToken === ""      ){
         toast.error("Failed , Check the credential");
+        alert("hi")
         setLoading(false);
       }
       else{
       const token = localStorage.getItem('jwtToken');
-if(jirausername !="")
+      const orgname = localStorage.getItem('username');
+
 
       try {
-        const response = await fetch('http://localhost:5004/submit-jira-connection', {
+        const response = await fetch('http://localhost:5004/submit-nessus-connection', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`, // Use the token from localStorage
             },
             body: JSON.stringify({
-                username: jirausername,
-                jiraUsername: jirausername,
-                jiraToken: jiratoken,
-                jiraUrl: jiraurl,
-                projectKey: jiraProjectKey,
-                organizationName: jiraOrganization,
+              accessToken: NessusAccessToken,
+              secretKey: NessusSecretKey,
+              apiToken: NessusApiToken,
+                orgname:orgname
             }),
         });
 
@@ -134,25 +118,23 @@ if(jirausername !="")
     
 
 
+       
 
     }
   return (
     <div className={styles.jira_wrapper}>
       <div className={styles.jira_header}>
-      Jira Integration
+      Nessus Integration
       
       </div>
       <div className={styles.jira_body}>
 <div className={styles.firstrow}>
-    <UserInput onInuptValue={handelJirausername} placeholder="Enter Jira Username" width="250px"/>
-    <UserInput onInuptValue={handelJiratoken}placeholder="Enter Jira Token" width="250px"/>
+    <UserInput onInuptValue={handelNessusAccessToken} placeholder="Enter Nessus Access Token" width="250px"/>
+    <UserInput onInuptValue={handelNessusSecretKey}placeholder="Enter Nessus Secret Key" width="250px"/>
 </div>
-<div className={styles.secondrow}>
-<UserInput onInuptValue={handelJiraurl}placeholder="Enter Jira Url" width="250px"/>
-    <UserInput onInuptValue={handelJiraproject}  placeholder="Enter ProjectKey" width="250px"/>
-</div>
+
 <div className={styles.thirdrow}>
-<UserInput onInuptValue={handelJiraOrgname}  placeholder="Enter Organization Name" width="57%"/>
+<UserInput onInuptValue={handelNessusApiToken}  placeholder="Enter Nessus Api Token" width="57%"/>
 </div>
 <div className={styles.fourthrow}>
 <LoadingButton
@@ -179,4 +161,4 @@ if(jirausername !="")
   )
 }
 
-export default JiraCom
+export default Nessus

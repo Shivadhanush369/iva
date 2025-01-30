@@ -8,6 +8,7 @@ import Stack from "@mui/material/Stack";
 import CardContent from "@mui/material/CardContent";
 import Subtabs from './Subtabs';
 import Schedulersui from '../Schedulers/Schedulersui';
+import Tools from './Tools';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -53,7 +54,7 @@ export default function BasicTabs() {
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Ticketing" {...a11yProps(0)} />
           <Tab label="Schedulers" {...a11yProps(1)}  />
-          <Tab label="Item Three" {...a11yProps(2)} />
+          <Tab label="Tool" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
@@ -63,7 +64,7 @@ export default function BasicTabs() {
         <Schedulersui/>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        Item Three
+        <Tools/>
       </CustomTabPanel>
     </Box>
     </CardContent>

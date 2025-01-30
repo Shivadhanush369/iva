@@ -1,0 +1,34 @@
+.jira_wrapper{
+    display: flex;
+    flex-direction: column;
+  
+}
+.jira_header{
+    border-bottom: 1px solid black;
+    font-family: 'Arial',sans-serif;
+    font-size: 22px;
+    padding:10px;
+
+}
+
+.jira_body{
+    gap:20px;
+}
+.firstrow{
+    display: flex;
+    margin-top: 30px;
+    gap: 20px;
+}
+.jira_body{
+    display: flex;
+    flex-direction: column;
+}
+.secondrow{
+    display: flex;
+    margin-top: 5px;
+    gap: 20px;
+}
+.fourthrow{
+    display: flex;
+gap:30px;
+}
